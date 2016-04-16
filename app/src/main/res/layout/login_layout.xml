@@ -44,9 +44,7 @@
         android:text="LOGIN"
         android:id="@+id/login_button"
         android:background="@android:color/holo_red_light"
-        android:layout_marginBottom="5dp"
-        android:onClick="loginUser"
-    />
+        android:layout_marginBottom="5dp"/>
 
     <Button
         android:layout_width="match_parent"

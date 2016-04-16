@@ -18,45 +18,24 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:id="@+id/headers"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_gravity="center_horizontal"
-        android:weightSum="1">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="In your circle"
+        android:id="@+id/textView"
+        android:layout_gravity="center_horizontal" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Contact:"
-            android:layout_alignParentLeft="true"
-            android:id="@+id/contact_name"
-            android:layout_weight="0.90" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Within Radius:"
-            android:layout_alignParentRight="true"
-            android:id="@+id/radius_result"
-            android:layout_weight="0.18" />
-
-    </LinearLayout>
-
-
-    <GridView
-        android:id="@+id/resultsView"
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="130dp"
+        android:id="@+id/imageView2"
         android:layout_gravity="center_horizontal"
+
         android:minHeight="220dp"
         android:background="@android:color/darker_gray"
         android:layout_marginBottom="15dp"
-        android:layout_weight="0.96"
-        android:numColumns="2" />
-
+        android:layout_weight="0.96" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -69,8 +48,7 @@
             android:text="Close Circle"
             android:id="@+id/close_circle_button"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:onClick="returnToMain"/>
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 

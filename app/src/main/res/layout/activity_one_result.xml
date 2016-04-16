@@ -12,64 +12,33 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <include
-        android:id="@+id/app_bar"
-        layout="@layout/app_bar" />
-        </LinearLayout>
+        <include
+            android:id="@+id/app_bar"
+            layout="@layout/app_bar" />
+    </LinearLayout>
 
-    <TabHost
+
+
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tabHost"
-        android:layout_gravity="center_horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"></TabWidget>
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:id="@+id/linearLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
-
-
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="130dp"
         android:id="@+id/imageView2"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.50"
 
         android:minHeight="220dp"
-        android:background="@android:color/holo_red_light"
+        android:background="@android:color/darker_gray"
         android:layout_marginBottom="15dp"/>
+
+    <Button
+        android:layout_width="248dp"
+        android:layout_height="107dp"
+        android:text="Notify when in range"
+        android:id="@+id/notify_one_request"
+        android:layout_gravity="center_horizontal" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_weight="0.12">
+        android:layout_height="match_parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -122,18 +91,18 @@
 
 
         </LinearLayout>
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/textView3"
-    android:layout_above="@+id/locate_button">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
-        android:scrollbars="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        />
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView3"
+            android:layout_above="@+id/locate_button">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/my_recycler_view"
+                android:scrollbars="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                />
+        </LinearLayout>
 
 
         <Button
@@ -143,7 +112,7 @@
             android:id="@+id/locate_button"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-           android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"/>
 
     </RelativeLayout>
 
