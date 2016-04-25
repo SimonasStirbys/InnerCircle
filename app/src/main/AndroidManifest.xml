@@ -11,7 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <!-- This makes it so only this app can access the messages and registration result -->
 
 
@@ -53,23 +54,18 @@
         <activity android:name=".MapsActivity"
             android:exported="true"/>
 
-        <activity android:name=".SettingsActivity"
-            android:exported="true"/>
-
-
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBJBkeK5GBJvuiIY5ANByMNjE-xrcXoeVk" />
+        <receiver
+            android:name=".BackgroundLocationService"
+            android:enabled="true"
+            android:exported="true" />
 
         <service
             android:name=".LocationService"
             android:enabled="true"
             android:exported="true" />
-
-        <!--<service-->
-            <!--android:name=".ReceiveService"-->
-            <!--android:exported="false" />-->
-
 
 
         <activity android:name=".MultipleResults"
@@ -93,7 +89,7 @@
                 <category android:name="se.gu.group1.watch" />
             </intent-filter>
         </receiver>
-        <service android:name=".GcmIntentService"
+        <service android:name="se.gu.group1.watch.GcmIntentService"
             android:exported="true"/>
 
     </application>

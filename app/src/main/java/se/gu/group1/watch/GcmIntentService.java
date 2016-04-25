@@ -2,11 +2,9 @@ package se.gu.group1.watch;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -71,7 +69,7 @@ public class GcmIntentService extends IntentService {
         Intent myintent = new Intent(this, ReceiveActivity.class);
         myintent.putExtra("msg", msg);// put the message in the intent extras
         myintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(myintent);// start the activity
+    startActivity(myintent);// start the activity
     }
 
 }

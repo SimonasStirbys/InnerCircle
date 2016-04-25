@@ -1,21 +1,21 @@
 package se.gu.group1.watch;
 
-import java.math.*;
-import java.util.*;
-import java.security.*;
-import java.io.*;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class ElgamalCrypto {
 
 
-	BigInteger secretKey;
-	BigInteger p;
-	BigInteger g;
-	BigInteger y;
-	Random sc = new SecureRandom();
-	ArrayList<BigInteger> sumOfSquares;
+   private final BigInteger secretKey;
+	private final  BigInteger p;
+	private final BigInteger g;
+	private final BigInteger y;
+	private final	 Random sc = new SecureRandom();
+	private final ArrayList<Integer> sumOfSquares;
 	public ElgamalCrypto(){
-		secretKey = new BigInteger(1024, sc);
+        secretKey = new BigInteger(1024, sc);
 		p = BigInteger.probablePrime(1024, sc); // prime
 		g = new BigInteger(1024, sc); // generator
 		y = g.modPow(secretKey, p);
@@ -59,7 +59,7 @@ public class ElgamalCrypto {
 
 	}*/
 
-	public  CipherText encryption(PublicKey Pk, int m) {
+	public CipherText encryption(PublicKey Pk, int m) {
 		CipherText cipher = new CipherText();
 		BigInteger X = Pk.g.modPow(new BigInteger(String.valueOf(m)), Pk.p); // additive
 		BigInteger r = new BigInteger(1024, sc);
@@ -74,25 +74,25 @@ public class ElgamalCrypto {
 		return cipher;
 	}
 
-	public  CipherText add(PublicKey Pk, CipherText cipherA, CipherText cipherB) {
+	public CipherText add(PublicKey Pk, CipherText cipherA, CipherText cipherB) {
 		BigInteger C0 = (cipherA.C0.multiply(cipherB.C0).mod(Pk.p));
 
 		BigInteger C1 = cipherA.C1.multiply(cipherB.C1).mod(Pk.p);
 		return new CipherText(C0, C1);
 	}
 
-	public  CipherText subtract(PublicKey Pk, CipherText cipherA, CipherText cipherB) {
-
+	public CipherText subtract(PublicKey Pk, CipherText cipherA, CipherText cipherB) {
+		
 		BigInteger C0 = (cipherA.C0.multiply(cipherB.C0.modInverse(Pk.p))).mod(Pk.p);
 
 		BigInteger C1 = cipherA.C1.multiply(cipherB.C1.modInverse(Pk.p)).mod(Pk.p);
 		return new CipherText(C0, C1);
 	}
 
-	public  CipherText multWithNum(PublicKey Pk, CipherText cipherA, BigInteger num) {
-
+	public CipherText multWithNum(PublicKey Pk, CipherText cipherA, BigInteger num) {
+	
 		BigInteger C0 = (cipherA.C0.modPow(num, Pk.p));
-
+		
 		BigInteger C1 = (cipherA.C1.modPow(num, Pk.p));
 
 		return new CipherText(C0, C1);
@@ -103,14 +103,12 @@ public class ElgamalCrypto {
 		int limit;
 		int sum_of_square;
 		for(int i=0;i<r;i++){
-			limit=(int)Math.sqrt((Math.pow(r,2)-Math.pow(i,2)));
+		limit=(int)((Math.pow(r,2)-Math.pow(i,2)));
 			for(int j=i;j<limit;j++){
-				sum_of_square=(int)(Math.pow(j,2)+Math.pow(i,2));
-				sumOfSquares.add(new BigInteger(String.valueOf(sum_of_square)));
+			sum_of_square=(int)(Math.pow(j,2)+Math.pow(i,2));
+				sumOfSquares.add(sum_of_square);
 			}
 		}
-
-
 	}
 
 	public  boolean decrypt(PublicKey Pk, SecretKey secretKey, CipherText cipher) {
@@ -120,7 +118,7 @@ public class ElgamalCrypto {
 	/*	System.out.println("\n\nc^r mod p = " + crmodp);
 		System.out.println("d = " + d);
 		System.out.println("Alice decodes: " + ad);*/
-		return ad.equals(BigInteger.ONE);
+		 return ad.equals(BigInteger.ONE);
 		/*int i;
 		for (i = 0; i < 100; i++) {
 			if (Pk.g.modPow(new BigInteger(String.valueOf(i)), Pk.p).equals(ad)) {
@@ -131,37 +129,58 @@ public class ElgamalCrypto {
 		return i;
 	}*/
 
+}
+	public  int decryptText(PublicKey Pk, SecretKey secretKey, CipherText cipher) {
+		BigInteger crmodp = (cipher.C0).modPow(secretKey.secretKey, Pk.p);
+		BigInteger d = crmodp.modInverse(Pk.p);
+		BigInteger ad = d.multiply(cipher.C1).mod(Pk.p);
+	/*	System.out.println("\n\nc^r mod p = " + crmodp);
+		System.out.println("d = " + d);
+		System.out.println("Alice decodes: " + ad);*/
+		//return ad.equals(BigInteger.ONE);
+		int i;
+		for (i = 0; i < 100; i++) {
+			if (Pk.g.modPow(new BigInteger(String.valueOf(i)), Pk.p).equals(ad)) {
+			//	System.out.println("Alice decodes :" + i);
+				break;
+			}
+		}
+		return i;
 	}
-
-	public ArrayList<BigInteger> getSumOfSquares(int max){
-		ArrayList<BigInteger> sosToSend=new ArrayList<>();
-		int index=sumOfSquares.indexOf(new BigInteger(String.valueOf(2*(max*max))));
-		for(int i=0;i<=index;i++){
+	public ArrayList<Integer> getSumOfSquares(int max){
+		ArrayList<Integer> sosToSend=new ArrayList<>();
+		int index=sumOfSquares.indexOf(2 * (max * max));
+		for(int i=0;i<index;i++){
 			sosToSend.add(sumOfSquares.get(i));
 		}
 		return sosToSend;
 
 	}
-	public  BigInteger getP() {
-		return p;
-	}
+
+    public CipherText getInverse(int i,PublicKey pk){
+        return subtract(pk,encryption(pk,0),encryption(pk,i)); // store in Hashmap
+
+    }
+    public  BigInteger getP() {
+        return p;
+    }
 
 
 
-	public  BigInteger getG() {
-		return g;
-	}
+    public  BigInteger getG() {
+        return g;
+    }
 
 
 
-	public  BigInteger getY() {
-		return y;
-	}
+    public  BigInteger getY() {
+        return y;
+    }
 
 
-	public BigInteger getSecretKey() {
-		return secretKey;
-	}
+    public BigInteger getSecretKey() {
+        return secretKey;
+    }
 }
 
 class SecretKey {
