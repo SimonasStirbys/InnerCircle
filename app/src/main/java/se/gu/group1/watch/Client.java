@@ -1,9 +1,6 @@
 package se.gu.group1.watch;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -18,10 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-
-import static android.support.v4.app.ActivityCompat.startActivity;
 
 /**
  * Created by Omar on 4/15/2016.
@@ -43,7 +37,7 @@ class Client  {
 
     }
 
-    // connects to server and initialize the input/output stream
+// connects to server and initialize the input/output stream
     public void connect(){
         try {
             socket = new Socket(dstAddress, dstPort);
@@ -58,56 +52,42 @@ class Client  {
     public int sendDataToServer(String msg) {
 
         Log.d("Msg to Server", msg);
-        out.println(msg);
+       out.println(msg);
 
         return 1;
     }
 
-    public int receiveData(SharedPreferences prefs, PublicKey pk, Context context) throws IOException, InterruptedException {
+    public int receiveData(SharedPreferences prefs, PublicKey pk) throws IOException, InterruptedException {
         String message;
         String nMessage;
         int x=0;
-
         while(x<30){
             sendDataToServer("{\"Check\":\"Bob\"}");
-            Thread.sleep(500);
+            Thread.sleep(8000);
             x++;
         }
         try {
             nMessage=input.readLine();
             message=nMessage;
-            Log.d("Message from server", message);
+            Log.d("Message from server", message.length()+"");
 
 
             JSONObject answer = new JSONObject(message);
             JSONObject fAnswer =answer.getJSONObject("Answer_Location");
-            JSONArray result;
+                JSONArray result;
 
-            result=(JSONArray)fAnswer.get("Answer");
-            encResults=new ArrayList<>();
-            for(int i=0;i<result.length();i+=2){
-                encResults.add(new CipherText(new BigInteger(result.getString(i)),new BigInteger(result.getString(i+1))));
+                result=(JSONArray)fAnswer.get("Answer");
+                encResults=new ArrayList<>();
+                for(int i=0;i<result.length();i+=2){
+                    encResults.add(new CipherText(new BigInteger(result.getString(i)),new BigInteger(result.getString(i+1))));
+                }
+             SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
+
+            Log.d("Result",String.valueOf(loc.InProx(encResults,pk,secret)));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
-
-            Log.d("client", ""+encResults.size());
-            Log.d("answer of dec ",""+loc.InProx(encResults,MainActivity.Pk,MainActivity.secret));
-
-            String name = fAnswer.getString("Sender_ID");
-            ArrayList<String> resultsArray = new ArrayList<>();
-            resultsArray.add(name);
-            resultsArray.add(""+loc.InProx(encResults,MainActivity.Pk,secret));
-            Intent resultsPage = new Intent(context, MultipleResults.class);
-            resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            resultsPage.putExtra("results_array", resultsArray);
-            context.startActivity(resultsPage);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return 1;
     }

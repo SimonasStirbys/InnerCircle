@@ -9,11 +9,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,7 +24,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -33,10 +31,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
 
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
@@ -50,7 +47,9 @@ public class MainActivity extends AppCompatActivity  {
 
     CustomListAdapter listAdapter;
     ListView listView;
+    AliceRequest alice;
     ElgamalCrypto crypto;
+    PublicKey pk;
     SharedPreferences settings;
     SharedPreferences.Editor editor;
     String json;
@@ -59,24 +58,24 @@ public class MainActivity extends AppCompatActivity  {
     CipherText[] cred=new CipherText[3];
     int xA=0;//Alice x-coordinate
     int yA=0;//Alice y-coordinate
-   static PublicKey Pk;//public key
+    static PublicKey Pk;//public key
     String keys;
-    static String user;
-    SharedPreferences prefs;
-    static SecretKey secret;
-    //SendData data;
+    SendData data;
     MyResult resultReceiver = new MyResult(null);
-
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
 
         crypto = new ElgamalCrypto();
         Pk = new PublicKey(crypto.getP(), crypto.getG(), crypto.getY());
-        secret = new SecretKey(crypto.getSecretKey());
-      //  storeKeys();
+        alice=new AliceRequest();
 
+
+        data=new SendData(prefs,Pk);
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -94,8 +93,6 @@ public class MainActivity extends AppCompatActivity  {
             // result of the request.
         }
 
-        Bundle extras = getIntent().getExtras();
-        user = extras.getString("Name");
         contactList.add("Alice");
         contactList.add("Bob");
         contactList.add("Cyril");
@@ -109,12 +106,11 @@ public class MainActivity extends AppCompatActivity  {
         contactList.add("Katherine");
         contactList.add("Louise");
         contactList.add("Marcus");
-        contactList.remove(user);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
-        toolbar.setTitle(user);
+        toolbar.setTitle("Watch");
         setSupportActionBar(toolbar);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -167,7 +163,7 @@ public class MainActivity extends AppCompatActivity  {
 //          //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
 //            data.execute(parseLocReqBeforeSend(recp, radius, storeKeys()));//send the Request JsonObject to server
 //            editor.commit();// submit changes to sharedPreferences
-    }
+        }
 
 
 
@@ -197,8 +193,7 @@ public class MainActivity extends AppCompatActivity  {
         return true;
     }
     public void locate(View view) {
-        prefs = getSharedPreferences("UserCred",
-                Context.MODE_PRIVATE);
+
         selectedContacts.clear();
         for (int i = 0; i < itemList.size(); i++) {
             if (itemList.get(i).getColor() == Color.CYAN) {
@@ -219,9 +214,8 @@ public class MainActivity extends AppCompatActivity  {
                     .show();
 
         } else {
-            xA= (int) 1364890360.8888892;//resultReceiver.makePrecsion()[0];
-            yA= (int) 774968259.0822252;//resultReceiver.makePrecsion()[1];
-
+            xA=resultReceiver.makePrecsion()[0];
+            yA=resultReceiver.makePrecsion()[1];
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             int radius = Integer.parseInt(spinner.getSelectedItem().toString());
 
@@ -237,18 +231,19 @@ public class MainActivity extends AppCompatActivity  {
 //            i.putExtra("selected_contacts", selectedContacts);
 //            startActivity(i);
 
-            generateEncryptedLocation(Pk, xA, yA); //generate keys
 
-            // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
-            //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
-            SendData data = new SendData(prefs, Pk, getApplicationContext());
-            data.execute(parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));//send the Request JsonObject to server
 
-        }
+
+
+                alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);//generate keys
+
+               // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
+                //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
+                data.execute(parseLocReqBeforeSend(selectedContacts, radius,alice.makeJsonObject(crypto,cred)));//send the Request JsonObject to server
+
+            }
 
     }
-
-
     public void selectAll(View view) {
         itemList.clear();
 
@@ -324,25 +319,7 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    private String storeKeys() {
-        JSONObject jsonReq=new JSONObject();
-        try {
-            jsonReq.put("A0.C0", cred[0].C0.toString());
-            jsonReq.put("A0.C1", cred[0].C1.toString());
-            jsonReq.put("A1.C0", cred[1].C0.toString());
-            jsonReq.put("A1.C1", cred[1].C1.toString());
-            jsonReq.put("A2.C0", cred[2].C0.toString());
-            jsonReq.put("A2.C1", cred[2].C1.toString());
-            jsonReq.put("P", crypto.getP().toString());
-            jsonReq.put("G", crypto.getG().toString());
-            jsonReq.put("Y", crypto.getY().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-
-        return jsonReq.toString();
-    }
 
     public String parseLocReqBeforeSend(ArrayList<String> recpName, int radius, String keys) {
         Log.d("length"," "+recpName.size());
@@ -359,7 +336,7 @@ public class MainActivity extends AppCompatActivity  {
         JSONObject jsonObj = new JSONObject();
 
         try {
-            jsonReq.put("Sender_ID", user);// Alice ID
+            jsonReq.put("Sender_ID", "Bob");// Alice ID
             jsonF.put("Recepient_ID", new JSONArray(names)); // Arrays of recp ID
             jsonReq.put("Radius", radius);//radius
 
@@ -377,58 +354,41 @@ public class MainActivity extends AppCompatActivity  {
         return jsonObj.toString();
     }
 
-    public  void generateEncryptedLocation(PublicKey Pk,int xA,int yA){// publickey ,Alice  x-coordinate, Alice y-coordinate
 
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
-        cred[0]=a0;
-        cred[1]=a1;
-        cred[2]=a2;
-
-    }
-
-    private void storeSecretKey() {
-        //String secret=crypto.getSecretKey().toString();
-        SharedPreferences prefs = getSharedPreferences("UserCred", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("Secret Key", secret.secretKey.toString());
-        Log.d("LoginActivity", secret.secretKey.toString());
-        editor.commit();
-    }
 
 
 
 }
 
 class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending data to server
+
     Client client=new Client("54.191.125.60", 5050);
     private SharedPreferences prefs;
     private PublicKey pk;
-    Context context;
+
     public SendData(){
 
     }
+    public SendData(SharedPreferences prefs, PublicKey pk) {
 
-
-    public SendData(SharedPreferences prefs, PublicKey pk, Context applicationContext) {
         this.prefs = prefs;
         this.pk = pk;
-        this.context=applicationContext;
     }
 
     @Override
     protected Void doInBackground(String... params) {
         client.connect();
         client.sendDataToServer(params[0]);
-        try {
-            client.receiveData(prefs,pk,context);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            client.receiveData(prefs,pk);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         client.disconect();
         return null;
     }
+
+
 }
