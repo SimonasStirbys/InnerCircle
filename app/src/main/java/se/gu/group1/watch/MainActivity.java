@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     int yA=0;//Alice y-coordinate
     static PublicKey Pk;//public key
     String keys;
-    SendData data;
+    //SendData data;
     MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
 
@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         alice=new AliceRequest();
 
 
-        data=new SendData(prefs,Pk);
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -236,11 +235,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);//generate keys
+            alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);//generate keys
 
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
-                data.execute(parseLocReqBeforeSend(selectedContacts, radius,alice.makeJsonObject(crypto,cred)));//send the Request JsonObject to server
+            SendData data=new SendData(prefs,Pk, getApplicationContext());
+            data.execute(parseLocReqBeforeSend(selectedContacts, radius,alice.makeJsonObject(crypto,cred)));//send the Request JsonObject to server
 
             }
 
@@ -366,14 +366,16 @@ class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending d
     Client client=new Client("54.191.125.60", 5050);
     private SharedPreferences prefs;
     private PublicKey pk;
+    Context context;
 
     public SendData(){
 
     }
-    public SendData(SharedPreferences prefs, PublicKey pk) {
+    public SendData(SharedPreferences prefs, PublicKey pk, Context applicationContext) {
 
         this.prefs = prefs;
         this.pk = pk;
+        this.context = applicationContext;
     }
 
     @Override
@@ -381,7 +383,7 @@ class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending d
         client.connect();
         client.sendDataToServer(params[0]);
         try {
-            client.receiveData(prefs,pk);
+            client.receiveData(prefs,pk,context);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

@@ -1,12 +1,13 @@
 package se.gu.group1.watch;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -23,8 +24,9 @@ public class MultipleResults extends AppCompatActivity {
 
         //get selected contacts
         Bundle extras = getIntent().getExtras();
-        ArrayList<String> resultsArray = extras.getStringArrayList("result_contacts");
-
+        ArrayList<String> resultsArray = extras.getStringArrayList("results_array");
+//        String result = extras.getString("results");
+//        resultsArray.add(result);
 
         //display selected contacts and range
         ArrayAdapter<String> resultsAdapter = new ArrayAdapter<String>(this,

@@ -1,5 +1,7 @@
 package se.gu.group1.watch;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -57,7 +59,7 @@ class Client  {
         return 1;
     }
 
-    public int receiveData(SharedPreferences prefs, PublicKey pk) throws IOException, InterruptedException {
+    public int receiveData(SharedPreferences prefs, PublicKey pk, Context context) throws IOException, InterruptedException {
         String message;
         String nMessage;
         int x=0;
@@ -81,9 +83,19 @@ class Client  {
                 for(int i=0;i<result.length();i+=2){
                     encResults.add(new CipherText(new BigInteger(result.getString(i)),new BigInteger(result.getString(i+1))));
                 }
-             SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
+            SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
 
-            Log.d("Result",String.valueOf(loc.InProx(encResults,pk,secret)));
+            String name = fAnswer.getString("Sender_ID");
+            ArrayList<String> resultsArray = new ArrayList<>();
+            resultsArray.add(name);
+            resultsArray.add(""+loc.InProx(encResults,MainActivity.Pk,secret));
+            Intent resultsPage = new Intent(context, MultipleResults.class);
+            resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            resultsPage.putExtra("results_array", resultsArray);
+            context.startActivity(resultsPage);
+
+
+            Log.d("Result", String.valueOf(loc.InProx(encResults, pk, secret)));
 
             } catch (JSONException e) {
                 e.printStackTrace();
