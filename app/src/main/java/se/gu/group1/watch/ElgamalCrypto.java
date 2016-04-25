@@ -8,18 +8,18 @@ import java.io.*;
 public class ElgamalCrypto {
 
 
-    BigInteger secretKey;
-     BigInteger p;
-     BigInteger g;
-     BigInteger y;
-	 Random sc = new SecureRandom();
-
+	BigInteger secretKey;
+	BigInteger p;
+	BigInteger g;
+	BigInteger y;
+	Random sc = new SecureRandom();
+	ArrayList<BigInteger> sumOfSquares;
 	public ElgamalCrypto(){
-        secretKey = new BigInteger(1024, sc);
+		secretKey = new BigInteger(1024, sc);
 		p = BigInteger.probablePrime(1024, sc); // prime
 		g = new BigInteger(1024, sc); // generator
 		y = g.modPow(secretKey, p);
-
+		sumOfSquares=new ArrayList<>();
 	}
 	/*public static void main(String[] args) throws IOException {
 
@@ -82,7 +82,7 @@ public class ElgamalCrypto {
 	}
 
 	public  CipherText subtract(PublicKey Pk, CipherText cipherA, CipherText cipherB) {
-		
+
 		BigInteger C0 = (cipherA.C0.multiply(cipherB.C0.modInverse(Pk.p))).mod(Pk.p);
 
 		BigInteger C1 = cipherA.C1.multiply(cipherB.C1.modInverse(Pk.p)).mod(Pk.p);
@@ -90,12 +90,27 @@ public class ElgamalCrypto {
 	}
 
 	public  CipherText multWithNum(PublicKey Pk, CipherText cipherA, BigInteger num) {
-	
+
 		BigInteger C0 = (cipherA.C0.modPow(num, Pk.p));
-		
+
 		BigInteger C1 = (cipherA.C1.modPow(num, Pk.p));
 
 		return new CipherText(C0, C1);
+	}
+
+	public void initializeSumOfSquares(){
+		int r=800;
+		int limit;
+		int sum_of_square;
+		for(int i=0;i<r;i++){
+			limit=(int)Math.sqrt((Math.pow(r,2)-Math.pow(i,2)));
+			for(int j=i;j<limit;j++){
+				sum_of_square=(int)(Math.pow(j,2)+Math.pow(i,2));
+				sumOfSquares.add(new BigInteger(String.valueOf(sum_of_square)));
+			}
+		}
+
+
 	}
 
 	public  boolean decrypt(PublicKey Pk, SecretKey secretKey, CipherText cipher) {
@@ -105,7 +120,7 @@ public class ElgamalCrypto {
 	/*	System.out.println("\n\nc^r mod p = " + crmodp);
 		System.out.println("d = " + d);
 		System.out.println("Alice decodes: " + ad);*/
-		 return ad.equals(BigInteger.ONE);
+		return ad.equals(BigInteger.ONE);
 		/*int i;
 		for (i = 0; i < 100; i++) {
 			if (Pk.g.modPow(new BigInteger(String.valueOf(i)), Pk.p).equals(ad)) {
@@ -116,27 +131,37 @@ public class ElgamalCrypto {
 		return i;
 	}*/
 
-}
-    public  BigInteger getP() {
-        return p;
-    }
+	}
+
+	public ArrayList<BigInteger> getSumOfSquares(int max){
+		ArrayList<BigInteger> sosToSend=new ArrayList<>();
+		int index=sumOfSquares.indexOf(new BigInteger(String.valueOf(2*(max*max))));
+		for(int i=0;i<=index;i++){
+			sosToSend.add(sumOfSquares.get(i));
+		}
+		return sosToSend;
+
+	}
+	public  BigInteger getP() {
+		return p;
+	}
 
 
 
-    public  BigInteger getG() {
-        return g;
-    }
+	public  BigInteger getG() {
+		return g;
+	}
 
 
 
-    public  BigInteger getY() {
-        return y;
-    }
+	public  BigInteger getY() {
+		return y;
+	}
 
 
-    public BigInteger getSecretKey() {
-        return secretKey;
-    }
+	public BigInteger getSecretKey() {
+		return secretKey;
+	}
 }
 
 class SecretKey {

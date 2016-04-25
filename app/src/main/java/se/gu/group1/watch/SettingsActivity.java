@@ -75,8 +75,6 @@ public class SettingsActivity extends Activity{
 
     public void applyChanges(View view){
 
-
-
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(i);
     }

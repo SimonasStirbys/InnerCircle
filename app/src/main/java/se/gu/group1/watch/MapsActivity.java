@@ -15,9 +15,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -67,26 +69,6 @@ public class MapsActivity extends FragmentActivity implements
         Double longitude = location.getLongitude();
         Log.i("LATITUDE", String.valueOf(latitude));
         Log.i("LONGITUDE", String.valueOf(longitude));
-
-        decimalToSexagesimal(latitude);
-        decimalToSexagesimal(longitude);
-    }
-
-    public double[] decimalToSexagesimal(Double decDegrees){
-        double degrees, minutes, seconds;
-        double[] coordinates = new double[3];
-
-        degrees = decDegrees-(decDegrees%1);
-        minutes = (decDegrees%1)*60; //note: minutes still have decimal points
-        seconds = (minutes %1)*60;
-        minutes = minutes - (minutes%1);
-
-        Log.i("COORDINATES", String.valueOf(degrees)+" "+String.valueOf(minutes)+" "+String.valueOf(seconds));
-
-        coordinates[0] = degrees;
-        coordinates[1] = minutes;
-        coordinates[2] = seconds;
-        return coordinates;
     }
 
     @Override
@@ -182,6 +164,21 @@ public class MapsActivity extends FragmentActivity implements
                 .title("I am here!");
         mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        //zooms in on the location of the user
+        CameraUpdate zoomedLozation = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+        mMap.animateCamera(zoomedLozation);
+
+        //draw  a radius on the map
+        Bundle extras = getIntent().getExtras();
+        int radius = extras.getInt("radius");
+
+        mMap.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(radius)
+                .strokeWidth(0f)
+                .fillColor(0x550000FF));
+
     }
 
     @Override
@@ -233,9 +230,5 @@ public class MapsActivity extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         handleNewLocation(location);
     }
-
-
-
-
 
 }

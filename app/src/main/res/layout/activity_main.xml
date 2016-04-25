@@ -5,23 +5,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="se.gu.group1.watch.MainActivity"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="?android:attr/activatedBackgroundIndicator">
+
     <LinearLayout
         android:id="@+id/container_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <include
+        <include
         android:id="@+id/app_bar"
         layout="@layout/app_bar" />
-        </LinearLayout>
+    </LinearLayout>
 
     <TabHost
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tabHost"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,7 +34,9 @@
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"></TabWidget>
+                android:layout_height="wrap_content">
+
+            </TabWidget>
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -42,7 +47,8 @@
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"></LinearLayout>
+                    android:orientation="vertical">
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/linearLayout2"
@@ -55,32 +61,41 @@
         </LinearLayout>
     </TabHost>
 
-    <ImageView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
+        android:layout_height="59dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.50"
-
-        android:minHeight="220dp"
-        android:background="@android:color/holo_red_light"
-        android:layout_marginBottom="15dp"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_weight="0.12">
+        android:weightSum="1">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Recent Requests"
-            android:id="@+id/textView3"
-            android:layout_marginTop="29dp"
-            android:layout_below="@+id/linearLayout3"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Contacts"
+            android:id="@+id/textView4"
+            android:layout_weight="0.97" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All"
+            android:id="@+id/select_all"
+            android:onClick="selectAll"/>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:choiceMode="multipleChoiceModal"
+        android:layout_weight="0.78" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.06">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -99,41 +114,23 @@
                 android:id="@+id/radius_text"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                />
 
-            <EditText
-                android:layout_width="0dp"
+            <Spinner
+                android:layout_width="112dp"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/editText"
-                android:numeric="integer"
-                android:textSize="10dp"
-                android:nestedScrollingEnabled="false"
-                android:layout_weight="0.569" />
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/checkBox"
-                android:checked="false"
-                android:text="Select friends"
-                android:layout_marginLeft="50dp" />
+                android:id="@+id/spinner"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="true"
+                />
 
 
         </LinearLayout>
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/textView3"
-    android:layout_above="@+id/locate_button">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/my_recycler_view"
-        android:scrollbars="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        />
-</LinearLayout>
+
 
 
         <Button
@@ -141,19 +138,11 @@
             android:layout_height="wrap_content"
             android:text="Locate"
             android:id="@+id/locate_button"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-           android:layout_marginBottom="10dp"/>
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:onClick="locate"/>
 
     </RelativeLayout>
-
-
-    <!-- <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-         android:name="com.google.android.gms.maps.MapFragment"
-         android:id="@+id/map"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"/>-->
-
-
 
 </LinearLayout>

@@ -2,12 +2,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/search"
-        android:title="@string/search_title"
-        app:showAsAction="collapseActionView|ifRoom"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
-    <item android:id="@+id/setting"
+    <item android:id="@+id/map_tab"
+        android:title="@string/map_title"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/app_settings"
         android:title="@string/settings_title"
-        app:showAsAction="never"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
+        app:showAsAction="ifRoom"/>
+
 </menu>

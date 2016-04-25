@@ -14,12 +14,16 @@ import java.util.List;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
+import android.app.Service;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
@@ -27,7 +31,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RegisterDeviceGCM extends Activity {
+public class RegisterDeviceGCM extends Service {
 
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
@@ -37,26 +41,33 @@ public class RegisterDeviceGCM extends Activity {
     static final String TAG = "GCMDemo";
     GoogleCloudMessaging gcm;
 
-  //  TextView mDisplay;
+    //  TextView mDisplay;
     Context context;
     String regid;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate() {
+        super.onCreate();
         context = getApplicationContext();
 
         gcm = GoogleCloudMessaging.getInstance(this);
 
-        new RegisterBackground().execute();
+
 
     }
-
 
     @Override
-    protected void onResume(){
-        super.onResume();
-
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        String name=intent.getStringExtra("Name");
+        new RegisterBackground().execute(name);
+        return START_STICKY;
     }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
     class RegisterBackground extends AsyncTask<String,String,String>{
 
         @Override
@@ -71,7 +82,7 @@ public class RegisterDeviceGCM extends Activity {
                 msg = "Dvice registered, registration ID=" + regid;
                 Log.d("Registration ", msg);
                 // store regid in sharedPref
-                sendRegistrationIdToBackend(regid); // send device id to server (need to do once if not registered)
+                sendRegistrationIdToBackend(regid,arg0[0]); // send device id to server (need to do once if not registered)
 
             } catch (IOException ex) {
                 msg = "Error :" + ex.getMessage();
@@ -81,32 +92,31 @@ public class RegisterDeviceGCM extends Activity {
 
         @Override
         protected void onPostExecute(String msg) {
-           Log.d("Msg ", msg);
+            Log.d("Msg ", msg);
 
         }
-    private void sendRegistrationIdToBackend(String regid) {
-        JSONObject jsonReq=new JSONObject();
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonReq.put("Sender_ID", 456); // should be replaced by the currect user ID
-            jsonReq.put("Reg_ID", regid);
-            jsonObj.put("Registration",jsonReq);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        private void sendRegistrationIdToBackend(String regid,String name) {
+            JSONObject jsonReq=new JSONObject();
+            JSONObject jsonObj = new JSONObject();
+            try {
+                jsonReq.put("Sender_ID", name); // should be replaced by the currect user ID
+                jsonReq.put("Reg_ID", regid);
+                jsonObj.put("Registration",jsonReq);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Socket socket = new Socket("54.191.125.60", 5050);
+
+                PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                out.println(jsonObj.toString());
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
-
-        try {
-            Socket socket = new Socket("54.191.125.60", 5050);
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-            out.println(jsonObj.toString());
-            out.close();
-            Log.d("Message from reg",input.readLine()); // receive conformation messeage from server
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }}
+    }
 }

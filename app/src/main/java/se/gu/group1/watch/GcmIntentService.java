@@ -71,7 +71,7 @@ public class GcmIntentService extends IntentService {
         Intent myintent = new Intent(this, ReceiveActivity.class);
         myintent.putExtra("msg", msg);// put the message in the intent extras
         myintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startActivity(myintent);// start the activity
+        startActivity(myintent);// start the activity
     }
 
 }
