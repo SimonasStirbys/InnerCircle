@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -379,13 +380,13 @@ class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending d
     protected Void doInBackground(String... params) {
         client.connect();
         client.sendDataToServer(params[0]);
-//        try {
-//            client.receiveData(prefs,pk);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            client.receiveData(prefs,pk);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         client.disconect();
         return null;
     }

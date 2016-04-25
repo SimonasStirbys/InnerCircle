@@ -63,7 +63,7 @@ class Client  {
         int x=0;
         while(x<30){
             sendDataToServer("{\"Check\":\"Bob\"}");
-            Thread.sleep(8000);
+            Thread.sleep(1000);
             x++;
         }
         try {
