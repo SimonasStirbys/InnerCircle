@@ -15,8 +15,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_layout);
-        crypto=new ElgamalCrypto();
-//        crypto.initializeSumOfSquares();
     }
 
     public void loginUser(View view) {
@@ -29,11 +27,6 @@ public class LoginActivity extends AppCompatActivity {
         String[] usernamePassword = new String[] {username, password};
 
         if(checkUserExistance(usernamePassword)==true) {
-            SharedPreferences prefs = getSharedPreferences("UserCred",
-                    Context.MODE_PRIVATE);
-
-
-                storeSecretKey();
 
             Intent register=new Intent(this,RegisterDeviceGCM.class);
             register.putExtra("Name",usernameText.getText().toString());
@@ -43,16 +36,6 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             //do nothing
         }
-    }
-
-    private void storeSecretKey() {
-        String secret=crypto.getSecretKey().toString();
-        SharedPreferences prefs = getSharedPreferences("UserCred",
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("Secret Key", secret);
-        editor.commit();
-        Log.d("Done"," Secret Key stored");
     }
 
 

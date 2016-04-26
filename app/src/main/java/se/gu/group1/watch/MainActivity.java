@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
         alice=new AliceRequest();
 
 
+        storeSecretKey();
+
+
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -214,8 +217,8 @@ public class MainActivity extends AppCompatActivity {
                     .show();
 
         } else {
-            xA=resultReceiver.makePrecsion()[0];
-            yA=resultReceiver.makePrecsion()[1];
+            xA= resultReceiver.makePrecsion()[0];
+            yA= resultReceiver.makePrecsion()[1];
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             int radius = Integer.parseInt(spinner.getSelectedItem().toString());
 
@@ -355,10 +358,15 @@ public class MainActivity extends AppCompatActivity {
         return jsonObj.toString();
     }
 
-
-
-
-
+    private void storeSecretKey() {
+        String secret=crypto.getSecretKey().toString();
+        SharedPreferences prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("Secret Key", secret);
+        editor.commit();
+        Log.d("Done"," Secret Key stored");
+    }
 }
 
 class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending data to server
