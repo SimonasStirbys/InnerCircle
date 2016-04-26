@@ -4,11 +4,21 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * Created by Omar on 4/11/2016.
@@ -22,16 +32,35 @@ public class GcmIntentService extends IntentService {
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
     String msg=" ";
+    SharedPreferences prefs;
+    SendData data;
+
+    JSONObject answer;
+    LocationAproximity loc;
+    BobResponse bob;
+    ArrayList<CipherText> encResults;
+    int xB=0,yB=1;
     public static final String TAG = "GCM Demo";
 
     public GcmIntentService() {
+
         super("GcmIntentService");
+
         // TODO Auto-generated constructor stub
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        prefs =  getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        data=new SendData(prefs,null,getApplicationContext());
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+
         Bundle extras = intent.getExtras();
         msg = intent.getStringExtra("Request_Details"); // get the message details if it is a request
 
@@ -62,14 +91,43 @@ public class GcmIntentService extends IntentService {
     }
 
     private void sendNotification(String msg) {
-        Log.d("Message is",msg);
-        mNotificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Intent myintent = new Intent(this, ReceiveActivity.class);
-        myintent.putExtra("msg", msg);// put the message in the intent extras
-        myintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startActivity(myintent);// start the activity
+        loc=new LocationAproximity();
+
+        bob=new BobResponse();
+        Log.d("message in ReceiveAct", msg);
+        if (msg.contains("Message")) {
+
+            data.execute("Answer");
+
+            Toast.makeText(this, "Hello Result", Toast.LENGTH_LONG).show();
+
+            // if the message is an answer then we need to decrypt the data and display the result
+
+            Log.d("Message in Answer",msg);
+
+            //put answer in
+        }else if(msg.contains("Radius")){ // if the message is a request then bob needs to make the computation and send the data back to alice
+            try {
+                JSONObject bobResult; // contains the result computed by bob
+                JSONObject cred;
+                cred=new JSONObject(msg);
+                bobResult = bob.createBobResponse(cred,loc,xB,yB);
+
+//                jsonReq.put("Sender_ID", "Cyril");// bobs key
+//                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
+//                jsonReq.put("Answer", bobResult);// results computed by bob
+//                json.put("Answer_Location", jsonReq);// the tag of the message
+
+                data.execute(bobResult.toString());
+                Log.d("Length ", ""+bobResult.length());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // send the JsonObject to the server
+
+        }
     }
 
 }

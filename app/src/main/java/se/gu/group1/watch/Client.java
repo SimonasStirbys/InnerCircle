@@ -31,6 +31,7 @@ class Client  {
     PrintWriter out;
     ArrayList<CipherText> encResults;
     LocationAproximity loc;
+
     // takes the Public Ip , port num
     Client(String addr, int port) {
         dstAddress = addr;
@@ -62,13 +63,11 @@ class Client  {
     public int receiveData(SharedPreferences prefs, PublicKey pk, Context context) throws IOException, InterruptedException {
         String message;
         String nMessage;
-        int x=0;
-        while(x<30){
-            sendDataToServer("{\"Check\":\"Bob\"}");
-            Thread.sleep(1000);
-            x++;
-        }
+        String username=prefs.getString("Username", "");
+
+        sendDataToServer("{\"Check\":\""+username+"\"}");
         try {
+            Thread.sleep(10000);
             nMessage=input.readLine();
             message=nMessage;
             Log.d("Message from server", message.length()+"");
@@ -86,16 +85,20 @@ class Client  {
             SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
 
             String name = fAnswer.getString("Sender_ID");
-            ArrayList<String> resultsArray = new ArrayList<>();
-            resultsArray.add(name);
-            resultsArray.add(""+loc.InProx(encResults,MainActivity.Pk,secret));
-            Intent resultsPage = new Intent(context, MultipleResults.class);
-            resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            resultsPage.putExtra("results_array", resultsArray);
-            context.startActivity(resultsPage);
 
+            MainActivity.resultsArray.add(name);
+            Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
+            MainActivity.resultsArray.add("" + inRange);
+            if(MainActivity.resultsArray.size()==4){
+                Intent resultsPage = new Intent(context, MultipleResults.class);
+                resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                resultsPage.putExtra("results_array", MainActivity.resultsArray);
+                context.startActivity(resultsPage);
 
-            Log.d("Result", String.valueOf(loc.InProx(encResults, pk, secret)));
+            }
+            Log.d("resultlength", " "+MainActivity.resultsArray.size()+" Name:"+name);
+
+            Log.d("Result", ""+inRange);
 
             } catch (JSONException e) {
                 e.printStackTrace();

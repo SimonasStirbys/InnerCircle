@@ -35,6 +35,7 @@ public class AliceRequest {
         }
 
         try {
+            //TODO: make Bob id not hardcoded.
             jsonReq.put("Sender_ID", "Bob");// Alice ID
             jsonF.put("Recepient_ID", new JSONArray(names)); // Arrays of recp ID
             jsonReq.put("Radius", radius);//radius

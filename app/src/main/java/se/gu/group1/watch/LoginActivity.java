@@ -27,9 +27,11 @@ public class LoginActivity extends AppCompatActivity {
         String[] usernamePassword = new String[] {username, password};
 
         if(checkUserExistance(usernamePassword)==true) {
+            String userName = usernameText.getText().toString();
+            storeUserName(userName);
 
             Intent register=new Intent(this,RegisterDeviceGCM.class);
-            register.putExtra("Name",usernameText.getText().toString());
+            register.putExtra("Name",userName);
             startService(register);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -42,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     //Use this method for checking if user credentials are legitimate
     //Mainly exists for the possiiility of an added database in the future
     protected boolean checkUserExistance(String[] usernamePassword){
-        String[][] users = new String[][] {{"Simonas", "1234"}, {"Cyril", "4321"}, {"Bob", "1234"}};
+        String[][] users = new String[][] {{"Alice", "1234"}, {"Bob", "1234"},{"Cyril", "1234"},{"David", "1234"}};
 
         for(int i = 0; i<users.length; i++){
             if(users[i][0].equals(usernamePassword[0])&&users[i][1].equals(usernamePassword[1])){
@@ -51,6 +53,15 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    //Store the user
+    private void storeUserName(String user) {
+        SharedPreferences prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("Username", user);
+        editor.commit();
     }
 }
 
