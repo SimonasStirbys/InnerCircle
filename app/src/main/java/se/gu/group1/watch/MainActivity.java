@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         //this is necessary since android API 23.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+        Intent alarm = new Intent(this, LocationService.class);
+        alarm.putExtra("receiver", resultReceiver);
+        startService(alarm);
+
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -237,8 +241,7 @@ public class MainActivity extends AppCompatActivity {
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
                 data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts));//send the Request JsonObject to server
-
-            }
+        }
 
     }
     public void selectAll(View view) {

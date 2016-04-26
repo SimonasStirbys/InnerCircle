@@ -27,10 +27,12 @@ public class ReceiveActivity extends Activity { // results page
     LocationAproximity loc;
     BobResponse bob;
     ArrayList<CipherText> encResults;
+    MyResult resultReceiver = new MyResult(null);
     //int xB=(int)1364890360.8888892,yB=(int)774968259.0822252; // should be replaced by Alice(x-coordinate) and Bob(x,y coordinate)
 
-    int xB=0,yB=1;
-
+    int xB=0;//resultReceiver.makePrecsion()[0]
+    int yB=1;//resultReceiver.makePrecsion()[1];
+  //  int xB=0,yB=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,8 @@ public class ReceiveActivity extends Activity { // results page
         //put answer in
         }else if(message.contains("Radius")){ // if the message is a request then bob needs to make the computation and send the data back to alice
             try {
+                Log.d("Bob x-coordinate",""+xB);
+                Log.d("Bob x-coordinate",""+yB);
                 JSONObject bobResult; // contains the result computed by bob
                 JSONObject cred;
                 cred=new JSONObject(message);
