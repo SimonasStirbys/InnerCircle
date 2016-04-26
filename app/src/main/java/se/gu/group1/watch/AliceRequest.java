@@ -1,7 +1,13 @@
 package se.gu.group1.watch;
 
+import android.content.SharedPreferences;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * Created by Omar on 4/25/2016.
@@ -35,5 +41,18 @@ public class AliceRequest {
         cred[2] = a2;
 
         return cred;
+    }
+    public boolean parseBobResponse(SecretKey secret, PublicKey pk, String message,LocationAproximity loc) throws JSONException {
+        JSONObject answer = new JSONObject(message);
+        JSONObject fAnswer =answer.getJSONObject("Answer_Location");
+        JSONArray result;
+
+        result=(JSONArray)fAnswer.get("Answer");
+
+        ArrayList<CipherText> encResults=new ArrayList<>();
+        for(int i=0;i<result.length();i+=2){
+            encResults.add(new CipherText(new BigInteger(result.getString(i)),new BigInteger(result.getString(i+1))));
+        }
+        return loc.InProx(encResults, pk, secret);
     }
 }

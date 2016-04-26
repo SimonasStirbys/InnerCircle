@@ -72,18 +72,10 @@ class Client  {
             Log.d("Message from server", message.length()+"");
 
 
-            JSONObject answer = new JSONObject(message);
-            JSONObject fAnswer =answer.getJSONObject("Answer_Location");
-                JSONArray result;
-
-                result=(JSONArray)fAnswer.get("Answer");
-                encResults=new ArrayList<>();
-                for(int i=0;i<result.length();i+=2){
-                    encResults.add(new CipherText(new BigInteger(result.getString(i)),new BigInteger(result.getString(i+1))));
-                }
-             SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
-
-            Log.d("Result",String.valueOf(loc.InProx(encResults,pk,secret)));
+            AliceRequest alice=new AliceRequest();
+            SecretKey secret= new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
+            boolean bobRes = alice.parseBobResponse(secret, pk, message,loc);
+            Log.d("Result",String.valueOf(bobRes));
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -91,6 +83,9 @@ class Client  {
 
         return 1;
     }
+
+
+
     public void disconect(){
         out.close();
         try {

@@ -69,22 +69,23 @@ public class ReceiveActivity extends Activity { // results page
         //put answer in
         }else if(message.contains("Radius")){ // if the message is a request then bob needs to make the computation and send the data back to alice
             try {
-                JSONArray bobResult; // contains the result computed by bob
+                JSONObject bobResult; // contains the result computed by bob
                 JSONObject cred;
                 cred=new JSONObject(message);
                 bobResult = bob.createBobResponse(cred,loc,xB,yB);
 
-                jsonReq.put("Sender_ID", "Cyril");// bobs key
-                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
-                jsonReq.put("Answer", bobResult);// results computed by bob
-                json.put("Answer_Location", jsonReq);// the tag of the message
+//                jsonReq.put("Sender_ID", "Cyril");// bobs key
+//                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
+//                jsonReq.put("Answer", bobResult);// results computed by bob
+//                json.put("Answer_Location", jsonReq);// the tag of the message
+                SendData data=new SendData();
+                data.execute(bobResult.toString());
                 Log.d("Length ", ""+bobResult.length());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            SendData data=new SendData();
-            data.execute(json.toString());// send the JsonObject to the server
+           // send the JsonObject to the server
 
         }
 
