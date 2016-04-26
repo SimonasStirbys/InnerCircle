@@ -14,8 +14,12 @@ import java.util.ArrayList;
  */
 public class AliceRequest {
 
-    public String makeJsonObject(ElgamalCrypto crypto, CipherText[] cred) {
+    public String makeJsonObject(ElgamalCrypto crypto, CipherText[] cred,int radius,ArrayList<String> recpName) {
+        String[] names=new String[recpName.size()];
+        names=recpName.toArray(names);
         JSONObject jsonReq=new JSONObject();
+        JSONObject jsonF=new JSONObject();
+        JSONObject jsonObj=new JSONObject();
         try {
             jsonReq.put("A0.C0", cred[0].C0.toString());
             jsonReq.put("A0.C1", cred[0].C1.toString());
@@ -29,7 +33,24 @@ public class AliceRequest {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return jsonReq.toString();
+
+        try {
+            jsonReq.put("Sender_ID", "Bob");// Alice ID
+            jsonF.put("Recepient_ID", new JSONArray(names)); // Arrays of recp ID
+            jsonReq.put("Radius", radius);//radius
+
+            jsonF.put("Cred", jsonReq);// add all the keys in the message
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            jsonObj.put("Requests", jsonF);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObj.toString();
     }
     public  CipherText[] generateEncryptedLocation(ElgamalCrypto crypto,PublicKey Pk, CipherText[] cred,int xA, int yA) {// publickey ,Alice  x-coordinate, Alice y-coordinate
 

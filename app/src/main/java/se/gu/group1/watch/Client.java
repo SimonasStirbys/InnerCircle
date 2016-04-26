@@ -92,7 +92,7 @@ class Client  {
             SecretKey secret=new SecretKey(new BigInteger(prefs.getString("Secret Key", "")));
 
             Log.d("client", ""+encResults.size());
-            Log.d("answer of dec ",""+loc.InProx(encResults,MainActivity.Pk,MainActivity.secret));
+            Log.d("answer of dec ",""+loc.InProx(encResults,MainActivity.Pk,secret));
 
             String name = fAnswer.getString("Sender_ID");
             ArrayList<String> resultsArray = new ArrayList<>();

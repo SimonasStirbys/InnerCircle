@@ -50,18 +50,13 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     AliceRequest alice;
     ElgamalCrypto crypto;
-    PublicKey pk;
-    SharedPreferences settings;
-    SharedPreferences.Editor editor;
-    String json;
-    int radius; // radius selected
     ArrayList<String> recp = new ArrayList<>();//recp Id
     CipherText[] cred=new CipherText[3];
     int xA=0;//Alice x-coordinate
     int yA=0;//Alice y-coordinate
     static PublicKey Pk;//public key
     String keys;
-    SendData data;
+    //SendData data;
     MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
 
@@ -76,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         alice=new AliceRequest();
 
 
-        data=new SendData(prefs,Pk);
+        
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
         int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -194,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     public void locate(View view) {
+        SendData data = new SendData(prefs, Pk);
 
         selectedContacts.clear();
         for (int i = 0; i < itemList.size(); i++) {
@@ -240,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
-                data.execute(parseLocReqBeforeSend(selectedContacts, radius,alice.makeJsonObject(crypto,cred)));//send the Request JsonObject to server
+                data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts));//send the Request JsonObject to server
 
             }
 

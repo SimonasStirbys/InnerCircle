@@ -17,9 +17,11 @@ public class BobResponse {
 
     @NonNull
     public JSONObject createBobResponse(JSONObject cred, LocationAproximity loc, int xB,int yB ) throws JSONException {
+     //   JSONObject jsonObj=message.getJSONObject("Requests");
+       // JSONObject cred=jsonObj.getJSONObject("Cred");
         JSONArray bobResult;
         bobResult=new JSONArray();
-        Log.d("Mesg", cred.get("A0.C0").toString());
+       // Log.d("Mesg", cred.get("A0.C0").toString());
         CipherText a0=new CipherText(new BigInteger(cred.getString("A0.C0").toString()),new BigInteger(cred.getString("A0.C1").toString()));
         CipherText a1=new CipherText(new BigInteger(cred.getString("A1.C0").toString()),new BigInteger(cred.getString("A1.C1").toString()));
         CipherText a2=new CipherText(new BigInteger(cred.getString("A2.C0").toString()),new BigInteger(cred.getString("A2.C1").toString()));
