@@ -62,6 +62,7 @@ class Client  {
 
     public int receiveData(SharedPreferences prefs, PublicKey pk, Context context) throws IOException, InterruptedException {
         String message;
+        int size = 0;
         String nMessage;
         String username=prefs.getString("Username", "");
 
@@ -86,19 +87,23 @@ class Client  {
 
             String name = fAnswer.getString("Sender_ID");
 
-            MainActivity.resultsArray.add(name);
+            int index=MainActivity.resultsArray.indexOf(name);
+            Log.d("clientindex", name+" "+index);
             Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
-            MainActivity.resultsArray.add("" + inRange);
-            if(MainActivity.resultsArray.size()==4){
-                Intent resultsPage = new Intent(context, MultipleResults.class);
-                resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                resultsPage.putExtra("results_array", MainActivity.resultsArray);
-                context.startActivity(resultsPage);
+            MainActivity.resultsArray.set(index+1,"" + inRange);
 
-            }
-            Log.d("resultlength", " "+MainActivity.resultsArray.size()+" Name:"+name);
+            size=prefs.getInt("Size",0);
+            Log.d("client array ", ""+size);
 
-            Log.d("Result", ""+inRange);
+//            if(MainActivity.resultsArray.size()==(size*2)){
+//                Intent resultsPage = new Intent(context, MultipleResults.class);
+//                resultsPage.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                resultsPage.putExtra("results_array", MainActivity.resultsArray);
+//                context.startActivity(resultsPage);
+//            }
+            Log.d("resultlength", " " + MainActivity.resultsArray.size() + " Name:" + name);
+
+            Log.d("Result", "" + inRange);
 
             } catch (JSONException e) {
                 e.printStackTrace();

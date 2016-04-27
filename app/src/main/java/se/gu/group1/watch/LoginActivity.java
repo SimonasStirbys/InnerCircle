@@ -1,6 +1,8 @@
 package se.gu.group1.watch;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,10 +20,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void loginUser(View view) {
-        EditText usernameText = (EditText) findViewById(R.id.name_signIn);
-        EditText passwordText = (EditText) findViewById(R.id.password_signIn);
+        final EditText usernameText = (EditText) findViewById(R.id.name_signIn);
+        final EditText passwordText = (EditText) findViewById(R.id.password_signIn);
 
-        String username = usernameText.getText().toString();
+        final String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
 
         String[] usernamePassword = new String[] {username, password};
@@ -36,7 +38,18 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }else{
-            //do nothing
+            new AlertDialog.Builder(this)
+                    .setTitle("Warning")
+                    .setMessage("Invalid Password and/or Username.")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            usernameText.setText("");
+                            passwordText.setText("");
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
         }
     }
 

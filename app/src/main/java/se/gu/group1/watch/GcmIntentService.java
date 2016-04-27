@@ -33,7 +33,7 @@ public class GcmIntentService extends IntentService {
     NotificationCompat.Builder builder;
     String msg=" ";
     SharedPreferences prefs;
-    SendData data;
+
 
     JSONObject answer;
     LocationAproximity loc;
@@ -54,7 +54,7 @@ public class GcmIntentService extends IntentService {
         super.onCreate();
         prefs =  getSharedPreferences("UserCred",
                 Context.MODE_PRIVATE);
-        data=new SendData(prefs,null,getApplicationContext());
+
     }
 
     @Override
@@ -91,10 +91,10 @@ public class GcmIntentService extends IntentService {
     }
 
     private void sendNotification(String msg) {
-
+        SendData data=new SendData(prefs,null,getApplicationContext());
         loc=new LocationAproximity();
 
-        bob=new BobResponse();
+        bob=new BobResponse(prefs);
         Log.d("message in ReceiveAct", msg);
         if (msg.contains("Message")) {
 
