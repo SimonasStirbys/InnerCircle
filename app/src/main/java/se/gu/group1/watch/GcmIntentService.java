@@ -39,7 +39,7 @@ public class GcmIntentService extends IntentService {
     LocationAproximity loc;
     BobResponse bob;
     ArrayList<CipherText> encResults;
-    int xB=0,yB=1;
+    int xB=MainActivity.resultReceiver.makePrecsion()[0],yB=MainActivity.resultReceiver.makePrecsion()[1];
     public static final String TAG = "GCM Demo";
 
     public GcmIntentService() {
@@ -60,7 +60,8 @@ public class GcmIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-
+        Toast toast = Toast.makeText(getApplicationContext(), "Received Request", Toast.LENGTH_SHORT);
+        toast.show();
         Bundle extras = intent.getExtras();
         msg = intent.getStringExtra("Request_Details"); // get the message details if it is a request
 
@@ -96,6 +97,9 @@ public class GcmIntentService extends IntentService {
 
         bob=new BobResponse(prefs);
         Log.d("message in ReceiveAct", msg);
+        Toast toast = Toast.makeText(getApplicationContext(), "Received Answer", Toast.LENGTH_SHORT);
+        toast.show();
+
         if (msg.contains("Message")) {
 
             data.execute("Answer");

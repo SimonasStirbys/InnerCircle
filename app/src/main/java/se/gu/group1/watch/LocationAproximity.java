@@ -1,5 +1,7 @@
 package se.gu.group1.watch;
 
+import android.util.Log;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -31,10 +33,13 @@ public class LocationAproximity {
 		
 	}
 	public  boolean InProx(ArrayList<CipherText> result,PublicKey Pk,SecretKey secretK){
-		for(CipherText cipher:result)
-		if(elgamal.decrypt(Pk, secretK, cipher)){
-			return true;
-			
+		for (int i = 0; i < result.size(); i++) {
+			Log.d("locationaproximity", String.valueOf( (float)i/result.size()));
+			CipherText cipher = result.get(i);
+			if (elgamal.decrypt(Pk, secretK, cipher)) {
+                Log.d("locationaproximity", "HOORAY!!!");
+				return true;
+			}
 		}
 		return false;
 	}

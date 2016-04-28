@@ -38,7 +38,7 @@ public class MultipleResults extends AppCompatActivity {
         new Thread() {
             public void run() {
                 int i=0;
-                while (i++ < 1000) {
+                while (i++ < 10000) {
                     try {
                         runOnUiThread(new Runnable() {
 

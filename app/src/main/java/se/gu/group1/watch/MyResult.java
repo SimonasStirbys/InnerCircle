@@ -37,8 +37,8 @@ class MyResult extends ResultReceiver {
 
     }
     public int[] makePrecsion(){
-        int xA = (int) (Double.valueOf(x)*10000000);
-        int yA = (int) (Double.valueOf(y)*10000000);
+        int xA = (int) (Double.valueOf(x)*1000);
+        int yA = (int) (Double.valueOf(y)*1000);
 
         return new int[]{xA,yA};
     }
