@@ -37,7 +37,7 @@ public class BobResponse {
         CipherText a2=new CipherText(new BigInteger(cred.getString("A2.C0").toString()),new BigInteger(cred.getString("A2.C1").toString()));
         PublicKey Pk=new PublicKey(new BigInteger(cred.getString("P")),new BigInteger(cred.getString("G")),new BigInteger(cred.getString("Y")));
         CipherText D=loc.bobComputes(Pk, a0, a1, a2, yB, xB);
-        ArrayList<CipherText> result=loc.LessThan(D, 16, Pk);
+        ArrayList<CipherText> result=loc.LessThan(D,10, Pk);
 
         for(int i=0;i<result.size();i++){
             bobResult.put(result.get(i).C0.toString());

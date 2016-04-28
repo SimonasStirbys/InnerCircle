@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     static PublicKey Pk;//public key
     String keys;
     //SendData data;
-    MyResult resultReceiver = new MyResult(null);
+    static MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
     String username;
 
@@ -255,10 +255,9 @@ public class MainActivity extends AppCompatActivity {
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
                 data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts, username));//send the Request JsonObject to server
-
             for(int i=0; i<selectedContacts.size(); i++){
                 resultsArray.add(selectedContacts.get(i));
-                resultsArray.add("True");
+                resultsArray.add("Hello");
             }
             Intent resultsPage = new Intent(this, MultipleResults.class);
             resultsPage.putExtra("results_array", resultsArray);
