@@ -34,12 +34,11 @@ public class GcmIntentService extends IntentService {
     String msg=" ";
     SharedPreferences prefs;
 
-
     JSONObject answer;
     LocationAproximity loc;
     BobResponse bob;
     ArrayList<CipherText> encResults;
-    int xB=0,yB=1;
+    int xB=13651781,yB=7752201;
     public static final String TAG = "GCM Demo";
 
     public GcmIntentService() {
@@ -93,8 +92,8 @@ public class GcmIntentService extends IntentService {
     private void sendNotification(String msg) {
         SendData data=new SendData(prefs,null,getApplicationContext());
         loc=new LocationAproximity();
-
-        bob=new BobResponse(prefs);
+    String userName= prefs.getString("Username", "");
+        bob=new BobResponse(userName);
         Log.d("message in ReceiveAct", msg);
         if (msg.contains("Message")) {
 

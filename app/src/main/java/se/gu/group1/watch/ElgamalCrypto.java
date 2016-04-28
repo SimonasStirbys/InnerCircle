@@ -99,7 +99,7 @@ public class ElgamalCrypto {
 	}
 
 	public void initializeSumOfSquares(){
-		int r=800;
+		int r=100;
 		int limit;
 		int sum_of_square;
 		for(int i=0;i<r;i++){
