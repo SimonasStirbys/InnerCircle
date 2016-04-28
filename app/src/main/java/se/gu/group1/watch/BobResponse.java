@@ -1,7 +1,9 @@
 package se.gu.group1.watch;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.EditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +17,13 @@ import java.util.ArrayList;
  */
 public class BobResponse {
 
+
+    private final SharedPreferences prefs;
+
+    public BobResponse(SharedPreferences prefs) {
+        this.prefs = prefs;
+    }
+
     @NonNull
     public JSONObject createBobResponse(JSONObject cred, LocationAproximity loc, int xB,int yB ) throws JSONException {
      // JSONObject jsonObj=message.getJSONObject("Requests");
@@ -27,7 +36,7 @@ public class BobResponse {
         CipherText a2=new CipherText(new BigInteger(cred.getString("A2.C0").toString()),new BigInteger(cred.getString("A2.C1").toString()));
         PublicKey Pk=new PublicKey(new BigInteger(cred.getString("P")),new BigInteger(cred.getString("G")),new BigInteger(cred.getString("Y")));
         CipherText D=loc.bobComputes(Pk, a0, a1, a2, yB, xB);
-        ArrayList<CipherText> result=loc.LessThan(D,4,Pk); // to be changed to radius later
+        ArrayList<CipherText> result=loc.LessThan(D, 4, Pk);
 
         for(int i=0;i<result.size();i++){
             bobResult.put(result.get(i).C0.toString());
@@ -35,7 +44,9 @@ public class BobResponse {
         }
         JSONObject jsonReq=new JSONObject();
         JSONObject json=new JSONObject();
-        jsonReq.put("Sender_ID", "Bob");// bobs key
+
+        String username=prefs.getString("Username", "");
+        jsonReq.put("Sender_ID", username);// bobs key
         jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
         jsonReq.put("Answer", bobResult);// results computed by bob
         json.put("Answer_Location", jsonReq);// the tag of the message

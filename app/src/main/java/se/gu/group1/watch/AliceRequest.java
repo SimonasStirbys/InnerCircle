@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class AliceRequest {
 
-    public String makeJsonObject(ElgamalCrypto crypto, CipherText[] cred,int radius,ArrayList<String> recpName) {
+    public String makeJsonObject(ElgamalCrypto crypto, CipherText[] cred,int radius,ArrayList<String> recpName, String sender) {
         String[] names=new String[recpName.size()];
         names=recpName.toArray(names);
         JSONObject jsonReq=new JSONObject();
@@ -35,7 +35,8 @@ public class AliceRequest {
         }
 
         try {
-            jsonReq.put("Sender_ID", "Bob");// Alice ID
+            //TODO: make Bob id not hardcoded.
+            jsonReq.put("Sender_ID", sender);// Alice ID
             jsonF.put("Recepient_ID", new JSONArray(names)); // Arrays of recp ID
             jsonReq.put("Radius", radius);//radius
 

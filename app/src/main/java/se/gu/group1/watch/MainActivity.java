@@ -33,6 +33,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> contactList = new ArrayList<String>();
     ArrayList<String> selectedContacts = new ArrayList<String>();
     ArrayList<Holder> itemList = new ArrayList<Holder>();
-
+    static  ArrayList<String> resultsArray = new ArrayList<>();
     CustomListAdapter listAdapter;
     ListView listView;
     AliceRequest alice;
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     //SendData data;
     MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +73,12 @@ public class MainActivity extends AppCompatActivity {
         crypto = new ElgamalCrypto();
         Pk = new PublicKey(crypto.getP(), crypto.getG(), crypto.getY());
         alice=new AliceRequest();
-
+        storeSecretKey();
 
         
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
-        int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
-
+        //int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         Intent alarm = new Intent(this, LocationService.class);
         alarm.putExtra("receiver", resultReceiver);
         startService(alarm);
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
             // result of the request.
         }
 
+        username=prefs.getString("Username", "");
         contactList.add("Alice");
         contactList.add("Bob");
         contactList.add("Cyril");
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         contactList.add("Katherine");
         contactList.add("Louise");
         contactList.add("Marcus");
+        contactList.remove(username);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -193,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     public void locate(View view) {
-        SendData data = new SendData(prefs, Pk);
+        SendData data = new SendData(prefs, Pk, getApplicationContext());
 
         selectedContacts.clear();
         for (int i = 0; i < itemList.size(); i++) {
@@ -215,8 +220,11 @@ public class MainActivity extends AppCompatActivity {
                     .show();
 
         } else {
+            Log.d("numberOfContacts", ""+selectedContacts.size());
             xA=resultReceiver.makePrecsion()[0];
             yA=resultReceiver.makePrecsion()[1];
+            Log.d("Coordinate xA", ""+xA);
+            Log.d("Coordinate yA", ""+yA);
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             int radius = Integer.parseInt(spinner.getSelectedItem().toString());
 
@@ -233,14 +241,28 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(i);
 
 
+//            Set<String> converterArray = new Set
+            String[] contacts=new String[selectedContacts.size()];
+            contacts=selectedContacts.toArray(contacts);
+            String contactsArray= Arrays.toString(contacts);
+            Log.d("Array",contactsArray);
+            storeString(contactsArray);
 
 
-
+            storeContactNumber(selectedContacts.size());
                 alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);//generate keys
 
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
-                data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts));//send the Request JsonObject to server
+                data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts, username));//send the Request JsonObject to server
+
+            for(int i=0; i<selectedContacts.size(); i++){
+                resultsArray.add(selectedContacts.get(i));
+                resultsArray.add("True");
+            }
+            Intent resultsPage = new Intent(this, MultipleResults.class);
+            resultsPage.putExtra("results_array", resultsArray);
+            startActivity(resultsPage);
         }
 
     }
@@ -320,75 +342,73 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public String parseLocReqBeforeSend(ArrayList<String> recpName, int radius, String keys) {
-        Log.d("length"," "+recpName.size());
-        JSONObject jsonF = new JSONObject();
-        JSONObject jsonReq = null;
-        String[] names=new String[recpName.size()];
-        names=recpName.toArray(names);
-
-        try {
-            jsonReq = new JSONObject(keys);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        JSONObject jsonObj = new JSONObject();
-
-        try {
-            jsonReq.put("Sender_ID", "Bob");// Alice ID
-            jsonF.put("Recepient_ID", new JSONArray(names)); // Arrays of recp ID
-            jsonReq.put("Radius", radius);//radius
-
-            jsonF.put("Cred", jsonReq);// add all the keys in the message
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            jsonObj.put("Requests", jsonF);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return jsonObj.toString();
+    private void storeSecretKey() {
+        String secret=crypto.getSecretKey().toString();
+        SharedPreferences prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("Secret Key", secret);
+        editor.commit();
+        Log.d("Done"," Secret Key stored");
     }
 
+    private void storeContactNumber(int number) {
+        SharedPreferences prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("Size", number);
+        editor.commit();
+    }
 
-
-
+    private void storeString(String string) {
+        SharedPreferences prefs = getSharedPreferences("UserCred",
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("selected_contacts", string);
+        editor.commit();
+    }
 
 }
 
-class SendData extends AsyncTask<String,Void,Void>{ // responsible for sending data to server
+class SendData extends AsyncTask<String,Void,Void>{
+
 
     Client client=new Client("54.191.125.60", 5050);
     private SharedPreferences prefs;
     private PublicKey pk;
+    Context context;
 
     public SendData(){
 
     }
-    public SendData(SharedPreferences prefs, PublicKey pk) {
+    public SendData(SharedPreferences prefs, PublicKey pk, Context context) {
 
         this.prefs = prefs;
         this.pk = pk;
+        this.context = context;
+
     }
 
     @Override
     protected Void doInBackground(String... params) {
         client.connect();
+        if(!params[0].equals("Answer")){
         client.sendDataToServer(params[0]);
-//        try {
-//            client.receiveData(prefs,pk);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        } else {
+            try {
+                client.receiveData(prefs, pk, context);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         client.disconect();
         return null;
     }
 
-
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+    }
 }
