@@ -27,7 +27,7 @@ public class BobResponse {
         CipherText a2=new CipherText(new BigInteger(cred.getString("A2.C0").toString()),new BigInteger(cred.getString("A2.C1").toString()));
         PublicKey Pk=new PublicKey(new BigInteger(cred.getString("P")),new BigInteger(cred.getString("G")),new BigInteger(cred.getString("Y")));
         CipherText D=loc.bobComputes(Pk, a0, a1, a2, yB, xB);
-        ArrayList<CipherText> result=loc.LessThan(D,4,Pk);
+        ArrayList<CipherText> result=loc.LessThan(D,4,Pk); // to be changed to radius later
 
         for(int i=0;i<result.size();i++){
             bobResult.put(result.get(i).C0.toString());
@@ -35,7 +35,7 @@ public class BobResponse {
         }
         JSONObject jsonReq=new JSONObject();
         JSONObject json=new JSONObject();
-        jsonReq.put("Sender_ID", "Cyril");// bobs key
+        jsonReq.put("Sender_ID", "Bob");// bobs key
         jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
         jsonReq.put("Answer", bobResult);// results computed by bob
         json.put("Answer_Location", jsonReq);// the tag of the message
