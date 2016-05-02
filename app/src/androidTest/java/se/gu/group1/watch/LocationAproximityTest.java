@@ -2,6 +2,7 @@ package se.gu.group1.watch;
 
 import junit.framework.TestCase;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -17,9 +18,9 @@ public class LocationAproximityTest extends TestCase {
         int yA=0;
         int xB=0;
         int yB=1;
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
+        CipherText a0 = crypto.encryption(Pk, new BigInteger(String.valueOf((int) Math.pow(xA, 2) + (int) Math.pow(yA, 2))));
+        CipherText a1 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * xA)));
+        CipherText a2 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * yA)));
             LocationAproximity locationTest=new LocationAproximity();
         CipherText D = locationTest.bobComputes(Pk, a0, a1, a2, yB, xB);
         ArrayList<CipherText> compute=locationTest.LessThan(D, 4, Pk);
@@ -35,9 +36,9 @@ public class LocationAproximityTest extends TestCase {
         int yA=0;
         int xB=0;
         int yB=1;
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
+        CipherText a0 = crypto.encryption(Pk, new BigInteger(String.valueOf((int) Math.pow(xA, 2) + (int) Math.pow(yA, 2))));
+        CipherText a1 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * xA)));
+        CipherText a2 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * yA)));
         LocationAproximity locationTest=new LocationAproximity();
         CipherText D = locationTest.bobComputes(Pk, a0, a1, a2, yB, xB);
         assertEquals(false, crypto.decrypt(Pk, new SecretKey(crypto.getSecretKey()), D));
@@ -51,9 +52,9 @@ public class LocationAproximityTest extends TestCase {
         int yA=0;
         int xB=0;
         int yB=0;
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
+        CipherText a0 = crypto.encryption(Pk, new BigInteger(String.valueOf((int) Math.pow(xA, 2) + (int) Math.pow(yA, 2))));
+        CipherText a1 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * xA)));
+        CipherText a2 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * yA)));
         LocationAproximity locationTest=new LocationAproximity();
         CipherText D = locationTest.bobComputes(Pk, a0, a1, a2, yB, xB);
         assertEquals(true, crypto.decrypt(Pk, new SecretKey(crypto.getSecretKey()), D));
@@ -67,9 +68,9 @@ public class LocationAproximityTest extends TestCase {
         int yA=0;
         int xB=0;
         int yB=5;
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
+        CipherText a0 = crypto.encryption(Pk, new BigInteger(String.valueOf((int) Math.pow(xA, 2) + (int) Math.pow(yA, 2))));
+        CipherText a1 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * xA)));
+        CipherText a2 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * yA)));
         LocationAproximity locationTest=new LocationAproximity();
         CipherText D = locationTest.bobComputes(Pk, a0, a1, a2, yB, xB);
         ArrayList<CipherText> compute=locationTest.LessThan(D, 4, Pk);

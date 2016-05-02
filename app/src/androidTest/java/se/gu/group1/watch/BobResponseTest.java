@@ -2,7 +2,6 @@ package se.gu.group1.watch;
 
 import junit.framework.TestCase;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class BobResponseTest extends TestCase {
        alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);
         ArrayList<String> names=new ArrayList<>();
         names.add("Alice");
-        JSONObject bobResponse = bob.createBobResponse(new JSONObject(alice.makeJsonObject(crypto, cred,500,names,"Alice")), new LocationAproximity(), 0, 3);
+        JSONObject bobResponse = bob.createBobResponse(new JSONObject(alice.makeJsonObject(crypto, cred,500,names,"Alice")), new LocationAproximity(), 0, 3, 10);
 
 
 

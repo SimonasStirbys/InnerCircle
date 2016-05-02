@@ -1,14 +1,13 @@
 package se.gu.group1.watch;
 
-import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import junit.framework.TestCase;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -35,18 +34,31 @@ public class AliceRequestTest extends TestCase {
     public void testResult() throws JSONException {
 
         BobResponse bob=new BobResponse("Bob");
+
+        int  xA = 13651779;
+        int yA = 7752198;
+
+        int  xB = 13651781;
+        int yB= 7752201;
+       Log.d("Test ", "" + xB + " " + yB);
+        Log.d("Test 1", "" + xA + " " + yA);
         LocationAproximity loc=new LocationAproximity();
         AliceRequest alice=new AliceRequest();
         CipherText[] cred=new CipherText[3];
         ElgamalCrypto crypto=new ElgamalCrypto();
         PublicKey Pk=new PublicKey(crypto.getP(),crypto.getG(),crypto.getY());
-        int xA=1364879928,yA=774947461;
+       // int xB=200000,yB=500000;
         alice.generateEncryptedLocation(crypto, Pk, cred, xA, yA);
-    ArrayList<String> names=new ArrayList<>();
+        ArrayList<String> names=new ArrayList<>();
         names.add("Alice");
-        JSONObject bobResponse = bob.createBobResponse(new JSONObject(alice.makeJsonObject(crypto, cred,500,names,"Alice")), new LocationAproximity(), (int)136.48902250666666, (int)77.49694290567865);
-            assertTrue(alice.parseBobResponse(new SecretKey(crypto.getSecretKey()),Pk,bobResponse.toString(),loc));
+        JSONObject bobResponse = bob.createBobResponse(emulateGCM(alice, cred, crypto, names), new LocationAproximity(),xB, yB, 30);
+        assertTrue(alice.parseBobResponse(new SecretKey(crypto.getSecretKey()),Pk,bobResponse.toString(),loc));
 
 
+    }
+
+    @NonNull
+    private JSONObject emulateGCM(AliceRequest alice, CipherText[] cred, ElgamalCrypto crypto, ArrayList<String> names) throws JSONException {
+        return new JSONObject(alice.makeJsonObject(crypto, cred,500,names,"Alice")).getJSONObject("Requests").getJSONObject("Cred");
     }
 }

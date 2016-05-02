@@ -1,7 +1,5 @@
 package se.gu.group1.watch;
 
-import android.content.SharedPreferences;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,10 +52,12 @@ public class AliceRequest {
         return jsonObj.toString();
     }
     public  CipherText[] generateEncryptedLocation(ElgamalCrypto crypto,PublicKey Pk, CipherText[] cred,int xA, int yA) {// publickey ,Alice  x-coordinate, Alice y-coordinate
+        BigInteger xA2=new BigInteger(String.valueOf(xA)).pow(2);
+        BigInteger yA2=new BigInteger(String.valueOf(yA)).pow(2);
 
-        CipherText a0 = crypto.encryption(Pk, (int) Math.pow(xA, 2) + (int) Math.pow(yA, 2));
-        CipherText a1 = crypto.encryption(Pk, 2 * xA);
-        CipherText a2 = crypto.encryption(Pk, 2 * yA);
+        CipherText a0 = crypto.encryption(Pk,xA2.add(yA2));
+        CipherText a1 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * xA)));
+        CipherText a2 = crypto.encryption(Pk, new BigInteger(String.valueOf(2 * yA)));
         cred[0] = a0;
         cred[1] = a1;
         cred[2] = a2;

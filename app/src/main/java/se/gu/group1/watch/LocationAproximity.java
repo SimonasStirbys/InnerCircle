@@ -3,7 +3,6 @@ package se.gu.group1.watch;
 import android.util.Log;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,7 +21,7 @@ public class LocationAproximity {
 
 		for(int i=0;i<radius-1;i++){
             value=rand.nextInt(radius)+1;
-            result.add(elgamal.multWithNum(Pk,(elgamal.subtract(Pk, d, elgamal.encryption(Pk, i))),new BigInteger(String.valueOf(value))));
+            result.add(elgamal.multWithNum(Pk,(elgamal.subtract(Pk, d, elgamal.encryption(Pk, new BigInteger(String.valueOf(i))))),new BigInteger(String.valueOf(value))));
 
 		}
 //		for(int i:range){ //-1 border not included
@@ -44,7 +43,10 @@ public class LocationAproximity {
 		return false;
 	}
 	public  CipherText bobComputes(PublicKey Pk,CipherText a0,CipherText a1,CipherText a2,int yB,int xB){
-		CipherText sub1=elgamal.add(Pk,a0 , elgamal.encryption(Pk, (int)Math.pow(xB, 2) + (int)Math.pow(yB, 2)));
+		BigInteger xB2=new BigInteger(String.valueOf(xB)).pow(2);
+		BigInteger yB2=new BigInteger(String.valueOf(yB)).pow(2);
+		BigInteger sqaures = xB2.add(yB2);
+		CipherText sub1=elgamal.add(Pk,a0 , elgamal.encryption(Pk, sqaures));
 		CipherText crossX=(elgamal.multWithNum(Pk, a1, new BigInteger(String.valueOf(xB))));
 		CipherText crossY=elgamal.multWithNum(Pk, a2, new BigInteger(String.valueOf(yB)));
 		CipherText sub2=elgamal.add(Pk, crossX,crossY);

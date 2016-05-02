@@ -6,18 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -115,7 +112,7 @@ public class GcmIntentService extends IntentService {
                 JSONObject bobResult; // contains the result computed by bob
                 JSONObject cred;
                 cred=new JSONObject(msg);
-                bobResult = bob.createBobResponse(cred,loc,xB,yB);
+                bobResult = bob.createBobResponse(cred,loc,xB,yB, 10);
 
 //                jsonReq.put("Sender_ID", "Cyril");// bobs key
 //                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request

@@ -59,9 +59,9 @@ public class ElgamalCrypto {
 
 	}*/
 
-	public CipherText encryption(PublicKey Pk, int m) {
+	public CipherText encryption(PublicKey Pk, BigInteger m) {
 		CipherText cipher = new CipherText();
-		BigInteger X = Pk.g.modPow(new BigInteger(String.valueOf(m)), Pk.p); // additive
+		BigInteger X = Pk.g.modPow(m, Pk.p); // additive
 		BigInteger r = new BigInteger(1024, sc);
 		BigInteger C1 = X.multiply(Pk.y.modPow(r, Pk.p)).mod(Pk.p);
 		BigInteger C0 = Pk.g.modPow(r, Pk.p);
@@ -158,7 +158,7 @@ public class ElgamalCrypto {
 	}
 
     public CipherText getInverse(int i,PublicKey pk){
-        return subtract(pk,encryption(pk,0),encryption(pk,i)); // store in Hashmap
+        return subtract(pk,encryption(pk, new BigInteger(String.valueOf(0))),encryption(pk, new BigInteger(String.valueOf(i)))); // store in Hashmap
 
     }
     public  BigInteger getP() {
