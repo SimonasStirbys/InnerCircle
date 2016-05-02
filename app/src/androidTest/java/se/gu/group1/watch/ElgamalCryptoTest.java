@@ -34,7 +34,6 @@ public class ElgamalCryptoTest extends TestCase {
 
     private List<Integer> givenRangeForR(int r) {
         ElgamalCrypto crypto = new ElgamalCrypto();
-        crypto.initializeSumOfSquares();
         return crypto.getSumOfSquares(r);
     }
 }

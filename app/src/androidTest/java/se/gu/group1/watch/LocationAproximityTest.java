@@ -12,7 +12,6 @@ public class LocationAproximityTest extends TestCase {
 
     public void testInProx() throws Exception {
         ElgamalCrypto crypto=new ElgamalCrypto();
-       crypto.initializeSumOfSquares();
         PublicKey Pk=new PublicKey(crypto.getP(),crypto.getG(),crypto.getY());
         int xA=0;
         int yA=0;

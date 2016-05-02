@@ -20,7 +20,7 @@ public class ElgamalCrypto {
     private final BigInteger y;
     private final Random sc = new SecureRandom();
 
-    private Map<Integer, List<Integer>> map = new HashMap<>();
+    private static final Map<Integer, List<Integer>> map = new HashMap<>();
 
 
     public ElgamalCrypto() {
@@ -28,6 +28,10 @@ public class ElgamalCrypto {
         p = BigInteger.probablePrime(1024, sc); // prime
         g = new BigInteger(1024, sc); // generator
         y = g.modPow(secretKey, p);
+
+        if(map.size() == 0) {
+            initializeSumOfSquares();
+        }
     }
     /*public static void main(String[] args) throws IOException {
 

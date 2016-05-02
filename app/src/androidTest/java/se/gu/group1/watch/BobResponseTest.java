@@ -27,7 +27,7 @@ public class BobResponseTest extends TestCase {
         String aliceRequest = alice.makeJsonObject(crypto, cred, 500, names, "Alice");
         JSONObject bobResponse = bob.createBobResponse(emulateGCM(aliceRequest), new LocationAproximity(), 0, 3, 10);
 
-        assertEquals(198, bobResponse.getJSONObject("Answer_Location").getJSONArray("Answer").length());
+        assertEquals(112, bobResponse.getJSONObject("Answer_Location").getJSONArray("Answer").length());
     }
 
     @NonNull
