@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
     public void locate(View view) {
         SendData data = new SendData(prefs, Pk, getApplicationContext());
 
+        resultsArray.clear();
         selectedContacts.clear();
         for (int i = 0; i < itemList.size(); i++) {
             if (itemList.get(i).getColor() == Color.CYAN) {

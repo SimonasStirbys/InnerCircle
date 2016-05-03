@@ -68,6 +68,7 @@ class Client  {
 
         sendDataToServer("{\"Check\":\""+username+"\"}");
         try {
+            //TODO why are we waiting 10000 miliseconds here?
             Thread.sleep(10000);
             nMessage=input.readLine();
             message=nMessage;
