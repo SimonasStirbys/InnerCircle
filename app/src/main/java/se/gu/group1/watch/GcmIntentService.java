@@ -112,7 +112,7 @@ public class GcmIntentService extends IntentService {
                 JSONObject bobResult; // contains the result computed by bob
                 JSONObject cred;
                 cred=new JSONObject(msg);
-                bobResult = bob.createBobResponse(cred,loc,xB,yB, 0);
+                bobResult = bob.createBobResponse(cred,loc,xB,yB, cred.getInt("Radius"));
 
 //                jsonReq.put("Sender_ID", "Cyril");// bobs key
 //                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
