@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class MultipleResults extends AppCompatActivity {
     private Toolbar toolbar;
-   static ArrayAdapter<String> resultsAdapter;
+    static ArrayAdapter<String> resultsAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -27,7 +27,7 @@ public class MultipleResults extends AppCompatActivity {
         resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, MainActivity.resultsArray);
         GridView resultsView = (GridView) findViewById(R.id.resultsView);
         resultsView.setAdapter(resultsAdapter);
-    runThread();
+        runThread();
         //display selected contacts and range
 
 
@@ -38,7 +38,7 @@ public class MultipleResults extends AppCompatActivity {
         new Thread() {
             public void run() {
                 int i=0;
-                while (i++ < 10000) {
+                while (true) {
                     try {
                         runOnUiThread(new Runnable() {
 
@@ -47,7 +47,7 @@ public class MultipleResults extends AppCompatActivity {
                                 resultsAdapter.notifyDataSetChanged();
                             }
                         });
-                        Thread.sleep(300);
+                        Thread.sleep(30000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -55,6 +55,7 @@ public class MultipleResults extends AppCompatActivity {
             }
         }.start();
     }
+
     public void returnToMain(View view){
 
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
