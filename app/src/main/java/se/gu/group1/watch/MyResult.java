@@ -11,6 +11,8 @@ import android.util.Log;
 class MyResult extends ResultReceiver {
     static String x ="0";
     static String y ="0";
+    static String latitude = "0";
+    static String longitude = "0";
 
     public boolean isDone() {
         return isDone;
@@ -27,19 +29,27 @@ class MyResult extends ResultReceiver {
 
 
         if(resultCode == 100) {
-            x = resultData.getStringArrayList("Location").get(0);
-            y = resultData.getStringArrayList("Location").get(1);
+            x = resultData.getStringArrayList("world_coordinates").get(0);
+            y = resultData.getStringArrayList("world_coordinates").get(1);
+            latitude = resultData.getStringArrayList("degree_coordinates").get(0);
+            longitude = resultData.getStringArrayList("degree_coordinates").get(1);
             isDone = true;
             makePrecsion();
         }
-        Log.d("CHECK COORDINATE", x);
-        Log.d("CHECK COORDINATE", y);
-
     }
     public int[] makePrecsion(){
-        int xA = (int) (Double.valueOf(x)*1000);
-        int yA = (int) (Double.valueOf(y)*1000);
+        int xA = (int) (Double.valueOf(x)*100000);
+        int yA = (int) (Double.valueOf(y)*100000);
 
         return new int[]{xA,yA};
     }
+
+    public double[] getLatLng(){
+        double lat = Double.valueOf(latitude);
+        double lng = Double.valueOf(longitude);
+
+        return new double[]{lat,lng};
+    }
+
+
 }

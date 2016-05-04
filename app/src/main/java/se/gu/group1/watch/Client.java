@@ -18,11 +18,12 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Omar on 4/15/2016.
  */
-class Client  {
+class Client{
 
     String dstAddress;
     int dstPort;
@@ -68,8 +69,7 @@ class Client  {
 
         sendDataToServer("{\"Check\":\""+username+"\"}");
         try {
-            //TODO why are we waiting 10000 miliseconds here?
-            Thread.sleep(10000);
+            Thread.sleep(5000);
             nMessage=input.readLine();
             message=nMessage;
             Log.d("Message from server", message.length()+"");
@@ -89,10 +89,20 @@ class Client  {
             String name = fAnswer.getString("Sender_ID");
 
             int index=MainActivity.resultsArray.indexOf(name);
-            Log.d("clientindex", name+" "+index);
-            Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
-            MainActivity.resultsArray.set(index+1,"" + inRange);
+            Log.d("clientindex", name + " " + index);
+            if(index!=-1) {
+                Calendar c = Calendar.getInstance();
+                int endMili = c.get(Calendar.MILLISECOND);
+                int endSecond = c.get(Calendar.SECOND);
+                int endMinute = c.get(Calendar.MINUTE);
 
+                Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
+                Log.d("Result", "" + inRange);
+                MainActivity.resultsArray.set(index + 1, "" + inRange);
+                MainActivity.resultsArray.set(index + 2, (Math.abs(endMinute-MainActivity.startMinute))+":"+(Math.abs(endSecond-MainActivity.startSecond))+":"+(Math.abs(endMili-MainActivity.startMili)));
+                //MultipleResults.resultsAdapter.notifyDataSetChanged();
+                Log.d("processtime",name+": "+endMinute+":"+endSecond+":"+endMili);
+            }
             size=prefs.getInt("Size",0);
             Log.d("client array ", ""+size);
 
@@ -104,12 +114,12 @@ class Client  {
 //            }
             Log.d("resultlength", " " + MainActivity.resultsArray.size() + " Name:" + name);
 
-            Log.d("Result", "" + inRange);
+
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
+    disconect();
         return 1;
     }
     public void disconect(){

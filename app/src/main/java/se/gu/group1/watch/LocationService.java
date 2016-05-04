@@ -70,22 +70,27 @@ public class LocationService extends Service implements
             handleNewLocation(location);
         }
     }
+
     private void handleNewLocation(Location location) {
         Log.d("Location in service", location.toString());
         final double currentLatitude = location.getLatitude();
         final double currentLongitude = location.getLongitude();
-        sendCoordinates(currentLatitude,currentLongitude);
-
-
-
+        Log.d("locationdata", "Latitude " + currentLatitude + ", Longitude " + currentLongitude);
+        sendCoordinates(currentLatitude, currentLongitude);
     }
 
     private void sendCoordinates(double x,double y) {
+        ArrayList<String> latLng = new ArrayList<>();
+        latLng.add(String.valueOf(x));
+        latLng.add(String.valueOf(y));
+
         double[] arr=coordinateConverter(x,y);
+        Log.d("locationdata", "World X " + arr[0] + ", World Y " + arr[1]);
         ArrayList<String> locArr=new ArrayList<>();
         locArr.add(String.valueOf(arr[0]));
         locArr.add(String.valueOf(arr[1]));
-        bundle.putStringArrayList("Location", locArr);
+        bundle.putStringArrayList("world_coordinates", locArr);
+        bundle.putStringArrayList("degree_coordinates", latLng);
         resultReceiver.send(100, bundle);
     }
 

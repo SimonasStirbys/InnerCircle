@@ -48,15 +48,8 @@ public class MapsActivity extends FragmentActivity implements
     BigInteger sumE;
     BigInteger x2;
     BigInteger y2;
+    LatLng latLng;
 
-
-    public void getCoordinates(Location location){
-
-        Double latitude = location.getLatitude();
-        Double longitude = location.getLongitude();
-        Log.i("LATITUDE", String.valueOf(latitude));
-        Log.i("LONGITUDE", String.valueOf(longitude));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +68,6 @@ public class MapsActivity extends FragmentActivity implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
-
     }
 
 
@@ -131,19 +123,16 @@ public class MapsActivity extends FragmentActivity implements
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
 
-        final double currentLatitude = location.getLatitude();
-        final double currentLongitude =location.getLongitude();
-
-
-        Log.d("currentLat:  ",String.valueOf(currentLatitude));
-        Log.d("currentLong:  ",String.valueOf(currentLongitude));
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+        Bundle extras = getIntent().getExtras();
+        double xCoord = extras.getDouble("latitude");
+        double yCoord = extras.getDouble("longitude");
+        int radius = extras.getInt("radius");
+        latLng = new LatLng(xCoord, yCoord);
 
         //mMap.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)).title("Current Location"));
         MarkerOptions options = new MarkerOptions()
@@ -156,17 +145,16 @@ public class MapsActivity extends FragmentActivity implements
         CameraUpdate zoomedLozation = CameraUpdateFactory.newLatLngZoom(latLng, 15);
         mMap.animateCamera(zoomedLozation);
 
-        //draw  a radius on the map
-        Bundle extras = getIntent().getExtras();
-        int radius = extras.getInt("radius");
 
+        //draw  a radius on the map
         mMap.addCircle(new CircleOptions()
                 .center(latLng)
                 .radius(radius)
                 .strokeWidth(0f)
                 .fillColor(0x550000FF));
-
     }
+
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -175,7 +163,6 @@ public class MapsActivity extends FragmentActivity implements
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         } else {
             handleNewLocation(location);
-            getCoordinates(location);
         }
     }
 

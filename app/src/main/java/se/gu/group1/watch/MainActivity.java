@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     static MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
     String username;
+    static int startMili, startSecond, startMinute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +77,16 @@ public class MainActivity extends AppCompatActivity {
         alice=new AliceRequest();
         storeSecretKey();
 
-        
+
         //Requesting permission to use user's location.
         //this is necessary since android API 23.
         //int permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         Intent alarm = new Intent(this, LocationService.class);
         alarm.putExtra("receiver", resultReceiver);
         startService(alarm);
+        xA=resultReceiver.makePrecsion()[0];
+        yA=resultReceiver.makePrecsion()[1];
+
 
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -198,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
     public void locate(View view) {
+        Intent alarm = new Intent(this, LocationService.class);
+        alarm.putExtra("receiver", resultReceiver);
+        startService(alarm);
+
         SendData data = new SendData(prefs, Pk, getApplicationContext());
 
         resultsArray.clear();
@@ -224,22 +233,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d("numberOfContacts", ""+selectedContacts.size());
             xA=resultReceiver.makePrecsion()[0];
             yA=resultReceiver.makePrecsion()[1];
-            Log.d("Coordinate xA", ""+xA);
-            Log.d("Coordinate yA", ""+yA);
+            Log.d("locationdata", "Sent X "+xA+", Sent Y "+yA);
             Spinner spinner = (Spinner) findViewById(R.id.spinner);
             int radius = Integer.parseInt(spinner.getSelectedItem().toString());
-
-//            radius = Integer.parseInt(spinner.getSelectedItem().toString());
-//            Intent n = new Intent(getApplicationContext(), LocationFetcher.class);
-//            n.putExtra("radius", radius);
-//            n.putExtra("selected_contacts", selectedContacts);
-//            startActivity(n);
-
-//            radius = Integer.parseInt(spinner.getSelectedItem().toString());
-//            Intent i = new Intent(getApplicationContext(), MultipleResults.class);
-//            i.putExtra("radius", radius);
-//            i.putExtra("selected_contacts", selectedContacts);
-//            startActivity(i);
 
 
 //            Set<String> converterArray = new Set
@@ -256,9 +252,18 @@ public class MainActivity extends AppCompatActivity {
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
                 data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts, username));//send the Request JsonObject to server
+
+            Calendar c = Calendar.getInstance();
+            startMili = c.get(Calendar.MILLISECOND);
+            startSecond = c.get(Calendar.SECOND);
+            startMinute = c.get(Calendar.MINUTE);
+
+
+            Log.d("processtime", startMinute+":"+startSecond+":"+startMili);
             for(int i=0; i<selectedContacts.size(); i++){
                 resultsArray.add(selectedContacts.get(i));
-                resultsArray.add("Hello");
+                resultsArray.add("pending");
+                resultsArray.add("pending");
             }
             Intent resultsPage = new Intent(this, MultipleResults.class);
             resultsPage.putExtra("results_array", resultsArray);
@@ -322,8 +327,14 @@ public class MainActivity extends AppCompatActivity {
             case R.id.map_tab:
                 Spinner spinner = (Spinner) findViewById(R.id.spinner);
                 int radius = Integer.parseInt(spinner.getSelectedItem().toString());
+
+                double latitude=resultReceiver.getLatLng()[0];
+                double longitude=resultReceiver.getLatLng()[1];
+
                 Intent n = new Intent(getApplicationContext(), MapsActivity.class);
                 n.putExtra("radius", radius);
+                n.putExtra("latitude", latitude);
+                n.putExtra("longitude", longitude);
                 startActivity(n);
                 return true;
 
@@ -403,7 +414,7 @@ class SendData extends AsyncTask<String,Void,Void>{
                 e.printStackTrace();
             }
         }
-        client.disconect();
+       client.disconect();
         return null;
     }
 

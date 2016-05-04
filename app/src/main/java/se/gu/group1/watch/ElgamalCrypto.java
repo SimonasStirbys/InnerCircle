@@ -1,5 +1,11 @@
 package se.gu.group1.watch;
 
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -168,7 +174,7 @@ public class ElgamalCrypto {
                 sos_queue.put(sum_of_square)
         */
 
-        int max = 100;
+        int max = 150;
         for (int r = 0; r < max; r++) {
             List<Integer> sumOfSquares = new ArrayList<>();
             for (int i = 0; i <= r; i++) {
@@ -185,7 +191,29 @@ public class ElgamalCrypto {
 
             Collections.sort(sumOfSquares);
             map.put(r, sumOfSquares);
+
+
         }
+
+
+//        try {
+//
+//            File root = new File(Environment.getExternalStorageDirectory(), "Squares");
+//            if (!root.exists()) {
+//                root.mkdirs();
+//            }
+//            File gpxfile = new File(root, "SumOfSquares.txt");
+//            FileWriter writer = new FileWriter(gpxfile);
+//            for(int i = 0; i<map.size(); i++){
+//                writer.append(map.get(i).toString()+"\n");
+//                writer.flush();
+//                Log.d("elgamalcrypto", ""+i);
+//            }
+//            writer.close();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public BigInteger getP() {

@@ -113,13 +113,13 @@ public class GcmIntentService extends IntentService {
                 JSONObject cred;
                 cred=new JSONObject(msg);
                 bobResult = bob.createBobResponse(cred,loc,xB,yB, cred.getInt("Radius"));
-
+                String result=bobResult.toString();
 //                jsonReq.put("Sender_ID", "Cyril");// bobs key
 //                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request
 //                jsonReq.put("Answer", bobResult);// results computed by bob
 //                json.put("Answer_Location", jsonReq);// the tag of the message
 
-                data.execute(bobResult.toString());
+                data.execute(result);
                 Log.d("Length ", ""+bobResult.length());
             } catch (JSONException e) {
                 e.printStackTrace();

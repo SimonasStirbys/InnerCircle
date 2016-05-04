@@ -32,16 +32,25 @@
             android:text="Contact:"
             android:layout_alignParentLeft="true"
             android:id="@+id/contact_name"
-            android:layout_weight="0.90" />
+            android:layout_weight="0.30" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Within Radius:"
-            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
             android:id="@+id/radius_result"
-            android:layout_weight="0.18" />
+            android:layout_weight="0.30" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Time:"
+            android:layout_alignParentRight="true"
+            android:id="@+id/computation_time"
+            android:layout_weight="0.30" />
 
     </LinearLayout>
 
@@ -55,7 +64,7 @@
         android:background="@android:color/darker_gray"
         android:layout_marginBottom="15dp"
         android:layout_weight="0.96"
-        android:numColumns="2" />
+        android:numColumns="3" />
 
 
     <RelativeLayout
