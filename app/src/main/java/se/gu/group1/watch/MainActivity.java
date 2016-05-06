@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
     static MyResult resultReceiver = new MyResult(null);
     SharedPreferences prefs;
     String username;
-    static int startMili, startSecond, startMinute;
-
+    int startMili, startSecond, startMinute, startHour;
+    static long startTime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         contactList.add("Katherine");
         contactList.add("Louise");
         contactList.add("Marcus");
-        contactList.remove(username);
+        //contactList.remove(username);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -257,9 +257,10 @@ public class MainActivity extends AppCompatActivity {
             startMili = c.get(Calendar.MILLISECOND);
             startSecond = c.get(Calendar.SECOND);
             startMinute = c.get(Calendar.MINUTE);
+            startHour = c.get(Calendar.HOUR);
+            startTime = (startHour*3600000)+(startMinute*60000)+(startSecond*1000)+startMili;
 
-
-            Log.d("processtime", startMinute+":"+startSecond+":"+startMili);
+            Log.d("processtime", "start: "+startTime);
             for(int i=0; i<selectedContacts.size(); i++){
                 resultsArray.add(selectedContacts.get(i));
                 resultsArray.add("pending");

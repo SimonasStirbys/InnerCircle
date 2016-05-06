@@ -1,5 +1,6 @@
 package se.gu.group1.watch;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.math.BigInteger;
@@ -13,8 +14,8 @@ public class LocationAproximity {
 
     ElgamalCrypto elgamal = new ElgamalCrypto();
 
-    public ArrayList<CipherText> LessThan(CipherText d, int radius, PublicKey Pk) {
-        List<Integer> range = elgamal.getSumOfSquares(radius);
+    public ArrayList<CipherText> LessThan(CipherText d, int radius, PublicKey Pk, Context context) {
+        List<Integer> range = elgamal.getSumOfSquares(radius, context);
         ArrayList<CipherText> result = new ArrayList<>();
         Random rand = new Random();
 

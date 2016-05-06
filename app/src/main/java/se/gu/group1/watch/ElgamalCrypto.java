@@ -1,11 +1,19 @@
 package se.gu.group1.watch;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.TextView;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -16,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 
 public class ElgamalCrypto {
 
@@ -159,8 +168,117 @@ public class ElgamalCrypto {
 
     }
 
-    public List<Integer> getSumOfSquares(int max) {
-        return map.get(max);
+    //TODO: we're passing both the radius and the context to get sum of squares. Discuss if there's a better way of doing this.
+    public List<Integer> getSumOfSquares(int max, Context context) {
+        Log.d("absencetest", "elgamal");
+        Log.d("absencetest", ""+max);
+
+//        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
+//        File fileName = new File(root,String.valueOf(max).concat(".txt"));
+
+
+        List<Integer> list=new ArrayList<>();
+
+        AssetManager assetManager = context.getAssets();
+        InputStream inputStream = null;
+        try {
+            Log.d("absencetest", "try statement");
+
+            inputStream = assetManager.open(String.valueOf(max));
+
+            Log.d("absencetest", "passed input stream");
+
+            if ( inputStream != null){
+                Log.d("absencetest", "if statement");
+                String line="";
+                String result="";
+                BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+                while((line = bufferedReader.readLine()) != null) {
+                    result=result.concat(line);
+                }
+                bufferedReader.close();
+                int index=result.indexOf(String.valueOf(max).concat(":").trim());
+                result=result.substring(index);
+                result=result.substring(result.indexOf("[")+1,result.indexOf("]") );
+                String[] array = result.split(",");
+
+                for(int i=0; i<array.length; i++){
+                    try{
+                        list.add(Integer.valueOf(array[i].trim()));
+                    }
+                    catch(NumberFormatException nfe){
+                        //Not an integer, do some
+                    }
+                }
+            }
+            // FileReader reads text files in the default encoding.
+            //FileReader fileReader = new FileReader(fileName);
+
+            // Always wrap FileReader in BufferedReader.
+//            BufferedReader bufferedReader = new BufferedReader(fileReader);
+//            String line="";
+//            String result="";
+//            while((line = bufferedReader.readLine()) != null) {
+//                result=result.concat(line);
+//            }
+//            bufferedReader.close();
+//            int index=result.indexOf(String.valueOf(max).concat(":").trim());
+//            result=result.substring(index);
+//            result=result.substring(result.indexOf("[")+1,result.indexOf("]") );
+//            String[] array = result.split(",");
+//
+//            for(int i=0; i<array.length; i++){
+//                try{
+//                    list.add(Integer.valueOf(array[i].trim()));
+//                }
+//                catch(NumberFormatException nfe){
+//                    //Not an integer, do some
+//                }
+//            }
+        }catch(IOException ex) {
+            System.out.println(
+                    "Error writing to file '"
+                            + inputStream + "'");
+            // Or we could just do this:
+            // ex.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public void readFromFile(){
+        //Find the directory for the SD Card using the API
+        //*Don't* hardcode "/sdcard"
+        //File sdcard = Environment.getExternalStorageDirectory();
+
+        //Get the text file
+        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
+        File file = new File(root,"SumOfSquares.txt");
+
+        //Read text from file
+        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            //You'll need to add proper error handling here
+        }
+
+
+
+
+
+
+
     }
 
     public void initializeSumOfSquares() {
@@ -173,47 +291,53 @@ public class ElgamalCrypto {
                 sum_of_square = j ** 2 + i ** 2
                 sos_queue.put(sum_of_square)
         */
+        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
+        if (!root.exists()) {
+            root.mkdirs();
 
-        int max = 150;
-        for (int r = 0; r < max; r++) {
-            List<Integer> sumOfSquares = new ArrayList<>();
-            for (int i = 0; i <= r; i++) {
-                int limit = (int) Math.ceil(Math.sqrt(Math.pow(r, 2) - Math.pow(i, 2)));
-                for (int j = i; j <= limit; j++) {
-                    int sum_of_square = (int) (Math.pow(j, 2) + Math.pow(i, 2));
-                    sumOfSquares.add(sum_of_square);
+
+            int max = 1000;
+            for (int r = 50; r < max; r += 100) {
+                List<Integer> sumOfSquares = new ArrayList<>();
+                for (int i = 0; i <= r; i++) {
+                    int limit = (int) Math.ceil(Math.sqrt(Math.pow(r, 2) - Math.pow(i, 2)));
+                    for (int j = i; j <= limit; j++) {
+                        int sum_of_square = (int) (Math.pow(j, 2) + Math.pow(i, 2));
+                        sumOfSquares.add(sum_of_square);
+                    }
                 }
+
+                if (r != 0) {
+                    sumOfSquares.add((int) (2 * Math.pow(r, 2)));
+                }
+
+                Collections.sort(sumOfSquares);
+                map.put(r, sumOfSquares);
+
+
             }
 
-            if(r != 0) {
-                sumOfSquares.add((int) (2 * Math.pow(r, 2)));
+
+            try {
+
+
+                FileWriter writer = null;
+
+                for (int i = 50; i < 1000; i += 100) {
+
+                    File gpxfile = new File(root, String.valueOf(i).concat(".txt"));
+                     writer = new FileWriter(gpxfile);
+                    writer.append(i + ":" + map.get(i).toString() + "\n");
+                    Log.d("elgamalcrypto", "" + i);
+                    writer.flush();
+                    writer.close();
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            Collections.sort(sumOfSquares);
-            map.put(r, sumOfSquares);
-
-
         }
-
-
-//        try {
-//
-//            File root = new File(Environment.getExternalStorageDirectory(), "Squares");
-//            if (!root.exists()) {
-//                root.mkdirs();
-//            }
-//            File gpxfile = new File(root, "SumOfSquares.txt");
-//            FileWriter writer = new FileWriter(gpxfile);
-//            for(int i = 0; i<map.size(); i++){
-//                writer.append(map.get(i).toString()+"\n");
-//                writer.flush();
-//                Log.d("elgamalcrypto", ""+i);
-//            }
-//            writer.close();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public BigInteger getP() {
@@ -268,3 +392,4 @@ class PublicKey {
         this.y = y;
     }
 }
+

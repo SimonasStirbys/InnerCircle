@@ -56,8 +56,6 @@ public class GcmIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        Toast toast = Toast.makeText(getApplicationContext(), "Received Request", Toast.LENGTH_SHORT);
-        toast.show();
         Bundle extras = intent.getExtras();
         msg = intent.getStringExtra("Request_Details"); // get the message details if it is a request
 
@@ -93,8 +91,6 @@ public class GcmIntentService extends IntentService {
     String userName= prefs.getString("Username", "");
         bob=new BobResponse(userName);
         Log.d("message in ReceiveAct", msg);
-        Toast toast = Toast.makeText(getApplicationContext(), "Received Answer", Toast.LENGTH_SHORT);
-        toast.show();
 
         if (msg.contains("Message")) {
 
@@ -112,7 +108,7 @@ public class GcmIntentService extends IntentService {
                 JSONObject bobResult; // contains the result computed by bob
                 JSONObject cred;
                 cred=new JSONObject(msg);
-                bobResult = bob.createBobResponse(cred,loc,xB,yB, cred.getInt("Radius"));
+                bobResult = bob.createBobResponse(cred,loc,xB,yB, cred.getInt("Radius"), getApplicationContext());
                 String result=bobResult.toString();
 //                jsonReq.put("Sender_ID", "Cyril");// bobs key
 //                jsonReq.put("Recepient_name", cred.get("Sender_ID"));// alice key which was sent in the request

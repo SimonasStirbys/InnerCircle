@@ -95,13 +95,16 @@ class Client{
                 int endMili = c.get(Calendar.MILLISECOND);
                 int endSecond = c.get(Calendar.SECOND);
                 int endMinute = c.get(Calendar.MINUTE);
+                int endHour = c.get(Calendar.HOUR);
+
+                long endTime = (endHour*3600000)+(endMinute*60000)+(endSecond*1000)+endMili;
 
                 Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
                 Log.d("Result", "" + inRange);
                 MainActivity.resultsArray.set(index + 1, "" + inRange);
-                MainActivity.resultsArray.set(index + 2, (Math.abs(endMinute-MainActivity.startMinute))+":"+(Math.abs(endSecond-MainActivity.startSecond))+":"+(Math.abs(endMili-MainActivity.startMili)));
+                MainActivity.resultsArray.set(index + 2, ""+String.valueOf(endTime - MainActivity.startTime));
                 //MultipleResults.resultsAdapter.notifyDataSetChanged();
-                Log.d("processtime",name+": "+endMinute+":"+endSecond+":"+endMili);
+                Log.d("processtime","end: "+String.valueOf(endTime));
             }
             size=prefs.getInt("Size",0);
             Log.d("client array ", ""+size);

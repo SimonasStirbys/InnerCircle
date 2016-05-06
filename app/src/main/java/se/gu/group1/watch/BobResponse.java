@@ -1,6 +1,8 @@
 package se.gu.group1.watch;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,7 +25,7 @@ public class BobResponse {
     }
 
     @NonNull
-    public JSONObject createBobResponse(JSONObject cred, LocationAproximity loc, int xB, int yB, int radius) throws JSONException {
+    public JSONObject createBobResponse(JSONObject cred, LocationAproximity loc, int xB, int yB, int radius, Context context) throws JSONException {
      // JSONObject jsonObj=message.getJSONObject("Requests");
        // JSONObject cred=jsonObj.getJSONObject("Cred");
         JSONArray bobResult;
@@ -34,7 +36,7 @@ public class BobResponse {
         CipherText a2=new CipherText(new BigInteger(cred.getString("A2.C0").toString()),new BigInteger(cred.getString("A2.C1").toString()));
         PublicKey Pk=new PublicKey(new BigInteger(cred.getString("P")),new BigInteger(cred.getString("G")),new BigInteger(cred.getString("Y")));
         CipherText D=loc.bobComputes(Pk, a0, a1, a2, yB, xB);
-        ArrayList<CipherText> result=loc.LessThan(D, radius, Pk);
+        ArrayList<CipherText> result=loc.LessThan(D, radius, Pk, context);
 
         for(int i=0;i<result.size();i++){
             bobResult.put(result.get(i).C0.toString());

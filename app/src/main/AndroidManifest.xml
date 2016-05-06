@@ -96,10 +96,6 @@
         <service
             android:name=".GcmIntentService"
             android:exported="true" />
-        <service
-            android:name=".SumOfSquares"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>
