@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
     String username;
     int startMili, startSecond, startMinute, startHour;
     static long startTime;
+            static int encryptionTime;
+    static ArrayList<String> requests;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         crypto = new ElgamalCrypto();
         Pk = new PublicKey(crypto.getP(), crypto.getG(), crypto.getY());
+        crypto.initializeSumOfSquares(Pk);
         alice=new AliceRequest();
         storeSecretKey();
 
@@ -100,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
             // app-defined int constant. The callback method gets the
             // result of the request.
         }
+
+        requests = new ArrayList<>();
 
         username=prefs.getString("Username", "");
         contactList.add("Alice");
@@ -199,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, R.id.app_settings, Menu.NONE, R.string.settings_title);
         menu.add(Menu.NONE, R.id.map_tab, Menu.NONE, R.string.map_title);
+        menu.add(Menu.NONE, R.id.location_requests, Menu.NONE, R.string.request_title);
 
         return true;
     }
@@ -245,20 +252,17 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Array",contactsArray);
             storeString(contactsArray);
 
-
+            int encryptionStart = getTime();
             storeContactNumber(selectedContacts.size());
                 alice.generateEncryptedLocation(crypto,Pk,cred,xA,yA);//generate keys
+            int encryptionEnd = getTime();
+            encryptionTime = encryptionEnd-encryptionStart;
 
                // Log.d("JsonString", parseLocReqBeforeSend(selectedContacts, radius, storeKeys()));// print the result
                 //  editor.putString("JSONString", parseLocReqBeforeSend(new int[]{123,456,789},500));
                 data.execute(alice.makeJsonObject(crypto, cred,radius,selectedContacts, username));//send the Request JsonObject to server
 
-            Calendar c = Calendar.getInstance();
-            startMili = c.get(Calendar.MILLISECOND);
-            startSecond = c.get(Calendar.SECOND);
-            startMinute = c.get(Calendar.MINUTE);
-            startHour = c.get(Calendar.HOUR);
-            startTime = (startHour*3600000)+(startMinute*60000)+(startSecond*1000)+startMili;
+            startTime = System.nanoTime();;
 
             Log.d("processtime", "start: "+startTime);
             for(int i=0; i<selectedContacts.size(); i++){
@@ -345,6 +349,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
                 return true;
 
+            case R.id.location_requests:
+                Log.d("pressedbutton", "button is pressed");
+                Intent requestPage = new Intent(getApplicationContext(), RequestActivity.class);
+                requestPage.putExtra("requests", requests);
+                startActivity(requestPage);
+
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -379,6 +391,18 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("selected_contacts", string);
         editor.commit();
     }
+
+
+    public int getTime(){
+        Calendar c = Calendar.getInstance();
+        int startMili = c.get(Calendar.MILLISECOND);
+        int startSecond = c.get(Calendar.SECOND);
+        int startMinute = c.get(Calendar.MINUTE);
+        int startHour = c.get(Calendar.HOUR);
+        int startTime = (startHour*3600000)+(startMinute*60000)+(startSecond*1000)+startMili;
+        return startTime;
+    }
+
 
 }
 

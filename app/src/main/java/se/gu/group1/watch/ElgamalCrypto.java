@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.crypto.Cipher;
 
 
 public class ElgamalCrypto {
@@ -36,17 +39,18 @@ public class ElgamalCrypto {
     private final Random sc = new SecureRandom();
 
     private static final Map<Integer, List<Integer>> map = new HashMap<>();
-
+    private static final Map<Integer, CipherText> negative = new HashMap<>();
+    PublicKey Pk;
 
     public ElgamalCrypto() {
         secretKey = new BigInteger(1024, sc);
         p = BigInteger.probablePrime(1024, sc); // prime
         g = new BigInteger(1024, sc); // generator
         y = g.modPow(secretKey, p);
-
-        if(map.size() == 0) {
-            initializeSumOfSquares();
-        }
+        //Pk=new PublicKey(p,g,y);
+//        if(map.size() == 0) {
+//            initializeSumOfSquares(pk);
+//        }
     }
     /*public static void main(String[] args) throws IOException {
 
@@ -163,87 +167,12 @@ public class ElgamalCrypto {
         return i;
     }
 
-    public CipherText getInverse(int i, PublicKey pk) {
-        return subtract(pk, encryption(pk, new BigInteger(String.valueOf(0))), encryption(pk, new BigInteger(String.valueOf(i)))); // store in Hashmap
-
+    public CipherText getInverse(int i) {
+        return negative.get(i);
     }
 
-    //TODO: we're passing both the radius and the context to get sum of squares. Discuss if there's a better way of doing this.
-    public List<Integer> getSumOfSquares(int max, Context context) {
-        Log.d("absencetest", "elgamal");
-        Log.d("absencetest", ""+max);
-
-//        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
-//        File fileName = new File(root,String.valueOf(max).concat(".txt"));
-
-
-        List<Integer> list=new ArrayList<>();
-
-        AssetManager assetManager = context.getAssets();
-        InputStream inputStream = null;
-        try {
-            Log.d("absencetest", "try statement");
-
-            inputStream = assetManager.open(String.valueOf(max));
-
-            Log.d("absencetest", "passed input stream");
-
-            if ( inputStream != null){
-                Log.d("absencetest", "if statement");
-                String line="";
-                String result="";
-                BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-                while((line = bufferedReader.readLine()) != null) {
-                    result=result.concat(line);
-                }
-                bufferedReader.close();
-                int index=result.indexOf(String.valueOf(max).concat(":").trim());
-                result=result.substring(index);
-                result=result.substring(result.indexOf("[")+1,result.indexOf("]") );
-                String[] array = result.split(",");
-
-                for(int i=0; i<array.length; i++){
-                    try{
-                        list.add(Integer.valueOf(array[i].trim()));
-                    }
-                    catch(NumberFormatException nfe){
-                        //Not an integer, do some
-                    }
-                }
-            }
-            // FileReader reads text files in the default encoding.
-            //FileReader fileReader = new FileReader(fileName);
-
-            // Always wrap FileReader in BufferedReader.
-//            BufferedReader bufferedReader = new BufferedReader(fileReader);
-//            String line="";
-//            String result="";
-//            while((line = bufferedReader.readLine()) != null) {
-//                result=result.concat(line);
-//            }
-//            bufferedReader.close();
-//            int index=result.indexOf(String.valueOf(max).concat(":").trim());
-//            result=result.substring(index);
-//            result=result.substring(result.indexOf("[")+1,result.indexOf("]") );
-//            String[] array = result.split(",");
-//
-//            for(int i=0; i<array.length; i++){
-//                try{
-//                    list.add(Integer.valueOf(array[i].trim()));
-//                }
-//                catch(NumberFormatException nfe){
-//                    //Not an integer, do some
-//                }
-//            }
-        }catch(IOException ex) {
-            System.out.println(
-                    "Error writing to file '"
-                            + inputStream + "'");
-            // Or we could just do this:
-            // ex.printStackTrace();
-        }
-        return list;
+    public List<Integer> getSumOfSquares(int max) {
+        return map.get(max);
     }
 
 
@@ -281,7 +210,7 @@ public class ElgamalCrypto {
 
     }
 
-    public void initializeSumOfSquares() {
+    public void initializeSumOfSquares(PublicKey pk) {
         /* Original python code:
 
         r = int(sqrt(self.r))
@@ -291,24 +220,30 @@ public class ElgamalCrypto {
                 sum_of_square = j ** 2 + i ** 2
                 sos_queue.put(sum_of_square)
         */
-        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
-        if (!root.exists()) {
-            root.mkdirs();
+//        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
+//        if (!root.exists()) {
+//            root.mkdirs();
+//
 
-
-            int max = 1000;
-            for (int r = 50; r < max; r += 100) {
+            int max = 125;
+            for (int r = 0; r < max; r += 25) {
                 List<Integer> sumOfSquares = new ArrayList<>();
                 for (int i = 0; i <= r; i++) {
                     int limit = (int) Math.ceil(Math.sqrt(Math.pow(r, 2) - Math.pow(i, 2)));
                     for (int j = i; j <= limit; j++) {
                         int sum_of_square = (int) (Math.pow(j, 2) + Math.pow(i, 2));
                         sumOfSquares.add(sum_of_square);
+                        if(!negative.containsKey(sum_of_square))
+                        negative.put(sum_of_square,subtract(pk, encryption(pk, new BigInteger(String.valueOf(0))), encryption(pk, new BigInteger(String.valueOf(sum_of_square)))));
                     }
                 }
 
                 if (r != 0) {
-                    sumOfSquares.add((int) (2 * Math.pow(r, 2)));
+                    int sum_of_square = (int) (2 * Math.pow(r, 2));
+                    sumOfSquares.add(sum_of_square);
+                    if(!negative.containsKey(sum_of_square))
+                        negative.put(sum_of_square,subtract(pk, encryption(pk, new BigInteger(String.valueOf(0))), encryption(pk, new BigInteger(String.valueOf(sum_of_square)))));
+
                 }
 
                 Collections.sort(sumOfSquares);
@@ -316,28 +251,6 @@ public class ElgamalCrypto {
 
 
             }
-
-
-            try {
-
-
-                FileWriter writer = null;
-
-                for (int i = 50; i < 1000; i += 100) {
-
-                    File gpxfile = new File(root, String.valueOf(i).concat(".txt"));
-                     writer = new FileWriter(gpxfile);
-                    writer.append(i + ":" + map.get(i).toString() + "\n");
-                    Log.d("elgamalcrypto", "" + i);
-                    writer.flush();
-                    writer.close();
-                }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public BigInteger getP() {
@@ -357,6 +270,17 @@ public class ElgamalCrypto {
 
     public BigInteger getSecretKey() {
         return secretKey;
+    }
+
+
+    public int getTime(){
+        Calendar c = Calendar.getInstance();
+        int startMili = c.get(Calendar.MILLISECOND);
+        int startSecond = c.get(Calendar.SECOND);
+        int startMinute = c.get(Calendar.MINUTE);
+        int startHour = c.get(Calendar.HOUR);
+        int startTime = (startHour*3600000)+(startMinute*60000)+(startSecond*1000)+startMili;
+        return startTime;
     }
 }
 

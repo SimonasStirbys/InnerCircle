@@ -149,7 +149,7 @@ public class MapsActivity extends FragmentActivity implements
         //draw  a radius on the map
         mMap.addCircle(new CircleOptions()
                 .center(latLng)
-                .radius(radius)
+                .radius(radius*10)
                 .strokeWidth(0f)
                 .fillColor(0x550000FF));
     }

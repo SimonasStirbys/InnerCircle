@@ -74,6 +74,11 @@
             android:name=".MultipleResults"
             android:exported="true" />
 
+        <activity
+            android:name=".RequestActivity"
+            android:exported="true" />
+
+
         <service
             android:name=".RegisterDeviceGCM"
             android:exported="true"

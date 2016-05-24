@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -14,19 +15,21 @@ public class LocationAproximity {
 
     ElgamalCrypto elgamal = new ElgamalCrypto();
 
-    public ArrayList<CipherText> LessThan(CipherText d, int radius, PublicKey Pk, Context context) {
-        List<Integer> range = elgamal.getSumOfSquares(radius, context);
+    public ArrayList<CipherText> LessThan(CipherText d, int radius, PublicKey Pk) {
+        List<Integer> range = elgamal.getSumOfSquares(radius);
         ArrayList<CipherText> result = new ArrayList<>();
         Random rand = new Random();
 
         for (int i : range) {
-            CipherText subtractBy = elgamal.encryption(Pk, new BigInteger(String.valueOf(i)));
-            CipherText subtraction = elgamal.subtract(Pk, d, subtractBy);
+            //CipherText subtractBy = elgamal.encryption(Pk, new BigInteger(String.valueOf(i)));// add to map
+            //CipherText negattive = elgamal.multWithNum(Pk, subtractBy, new BigInteger(String.valueOf("-1")));
+            CipherText subtraction = elgamal.add(Pk, d, elgamal.getInverse(i));
+            //CipherText subtraction = elgamal.subtract(Pk, d, subtractBy);
             BigInteger random = new BigInteger(Pk.p.bitCount(), rand);
             CipherText randomized = elgamal.multWithNum(Pk, subtraction, random);
             result.add(randomized);
         }
-
+        Collections.shuffle(result);
         return result;
     }
 

@@ -61,6 +61,17 @@ class Client{
         return 1;
     }
 
+    public int getTime(){
+        Calendar c = Calendar.getInstance();
+        int startMili = c.get(Calendar.MILLISECOND);
+        int startSecond = c.get(Calendar.SECOND);
+        int startMinute = c.get(Calendar.MINUTE);
+        int startHour = c.get(Calendar.HOUR);
+        int startTime = (startHour*3600000)+(startMinute*60000)+(startSecond*1000)+startMili;
+        return startTime;
+    }
+
+
     public int receiveData(SharedPreferences prefs, PublicKey pk, Context context) throws IOException, InterruptedException {
         String message;
         int size = 0;
@@ -69,7 +80,6 @@ class Client{
 
         sendDataToServer("{\"Check\":\""+username+"\"}");
         try {
-            Thread.sleep(5000);
             nMessage=input.readLine();
             message=nMessage;
             Log.d("Message from server", message.length()+"");
@@ -77,6 +87,8 @@ class Client{
 
             JSONObject answer = new JSONObject(message);
             JSONObject fAnswer =answer.getJSONObject("Answer_Location");
+            int timeToEncryptAnswer=fAnswer.getInt("Time");
+            Log.d("Time",timeToEncryptAnswer+" ");
                 JSONArray result;
 
                 result=(JSONArray)fAnswer.get("Answer");
@@ -97,14 +109,19 @@ class Client{
                 int endMinute = c.get(Calendar.MINUTE);
                 int endHour = c.get(Calendar.HOUR);
 
-                long endTime = (endHour*3600000)+(endMinute*60000)+(endSecond*1000)+endMili;
-
+                long endTime = System.nanoTime();
+                int decryptionStart = getTime();
                 Boolean inRange = loc.InProx(encResults, MainActivity.Pk, secret);
+                int decryptionEnd = getTime();
+                int decryptionTime = decryptionEnd - decryptionStart;
                 Log.d("Result", "" + inRange);
                 MainActivity.resultsArray.set(index + 1, "" + inRange);
-                MainActivity.resultsArray.set(index + 2, ""+String.valueOf(endTime - MainActivity.startTime));
+                MainActivity.resultsArray.set(index + 2, "Total: "+String.valueOf((endTime - MainActivity.startTime)/1000000)+"\n"+
+                                "Encryption: "+String.valueOf(MainActivity.encryptionTime)+"\n"+
+                                "Decryption: "+String.valueOf(decryptionTime)+"\n"+
+                                "Bob: "+String.valueOf(timeToEncryptAnswer));
                 //MultipleResults.resultsAdapter.notifyDataSetChanged();
-                Log.d("processtime","end: "+String.valueOf(endTime));
+                Log.d("processtime", "end: " + String.valueOf(endTime));
             }
             size=prefs.getInt("Size",0);
             Log.d("client array ", ""+size);

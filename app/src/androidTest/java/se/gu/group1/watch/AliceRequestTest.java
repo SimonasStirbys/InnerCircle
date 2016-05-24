@@ -35,11 +35,11 @@ public class AliceRequestTest extends TestCase {
 
         BobResponse bob=new BobResponse("Bob");
 
-        int  xA = 13651779;
-        int yA = 7752198;
+        int  xA = 0;
+        int yA = 0;
 
-        int  xB = 13651781;
-        int yB= 7752201;
+        int  xB = 0;
+        int yB= 3;
        Log.d("Test ", "" + xB + " " + yB);
         Log.d("Test 1", "" + xA + " " + yA);
         LocationAproximity loc=new LocationAproximity();
@@ -47,11 +47,12 @@ public class AliceRequestTest extends TestCase {
         CipherText[] cred=new CipherText[3];
         ElgamalCrypto crypto=new ElgamalCrypto();
         PublicKey Pk=new PublicKey(crypto.getP(),crypto.getG(),crypto.getY());
+        crypto.initializeSumOfSquares(Pk);
        // int xB=200000,yB=500000;
         alice.generateEncryptedLocation(crypto, Pk, cred, xA, yA);
         ArrayList<String> names=new ArrayList<>();
         names.add("Alice");
-        JSONObject bobResponse = bob.createBobResponse(emulateGCM(alice, cred, crypto, names), new LocationAproximity(),xB, yB, 30);
+        JSONObject bobResponse = bob.createBobResponse(emulateGCM(alice, cred, crypto, names), new LocationAproximity(),xB, yB, 50);
         assertTrue(alice.parseBobResponse(new SecretKey(crypto.getSecretKey()),Pk,bobResponse.toString(),loc));
 
 
