@@ -47,48 +47,8 @@ public class ElgamalCrypto {
         p = BigInteger.probablePrime(1024, sc); // prime
         g = new BigInteger(1024, sc); // generator
         y = g.modPow(secretKey, p);
-        //Pk=new PublicKey(p,g,y);
-//        if(map.size() == 0) {
-//            initializeSumOfSquares(pk);
-//        }
     }
-    /*public static void main(String[] args) throws IOException {
-
-
-		//
-		// public key calculation
-		//
-		System.out.println("secretKey = " + secretKey);
-		 // Y
-		//
-		// Encryption
-		//
-		System.out.print("Enter your Big Number message -->");
-		Scanner scan = new Scanner(System.in);
-		String s = scan.nextLine();
-
-		PublicKey Pk = new PublicKey(p, g, y);
-		SecretKey secretK = new SecretKey(secretKey);
-		*//*CipherText cipher = encryption(Pk, s);
-		CipherText cipher2 = encryption(Pk, "10");
-		CipherText resultAdd = add(Pk, cipher, cipher2);
-		CipherText resultSub = subtract(Pk, cipher2, cipher);
-		CipherText multWith5=multWithNum(Pk, cipher, 5);
-		
-		int result = decrypt(Pk, secretK, resultAdd);
-		System.out.println("substart is " + decrypt(Pk, secretK, resultSub));
-		System.out.println("Multiply is " + decrypt(Pk, secretK, multWith5));
-		System.out.println("Result is " + result);*//*
-		//
-		// Decryption
-		//
-		*//*
-		 * BigInteger crmodp = (C0.multiply(C0).mod(p)).modPow(secretKey, p);
-		 * BigInteger d = crmodp.modInverse(p); BigInteger ad =
-		 * d.multiply(C1.multiply(C1).mod(p)).mod(p); Multiplication
-		 *//*
-
-	}*/
+    
 
     public CipherText encryption(PublicKey Pk, BigInteger m) {
         CipherText cipher = new CipherText();
@@ -220,11 +180,6 @@ public class ElgamalCrypto {
                 sum_of_square = j ** 2 + i ** 2
                 sos_queue.put(sum_of_square)
         */
-//        File root = new File(Environment.getExternalStorageDirectory(), "Squares");
-//        if (!root.exists()) {
-//            root.mkdirs();
-//
-
             int max = 125;
             for (int r = 0; r < max; r += 25) {
                 List<Integer> sumOfSquares = new ArrayList<>();
@@ -232,6 +187,7 @@ public class ElgamalCrypto {
                     int limit = (int) Math.ceil(Math.sqrt(Math.pow(r, 2) - Math.pow(i, 2)));
                     for (int j = i; j <= limit; j++) {
                         int sum_of_square = (int) (Math.pow(j, 2) + Math.pow(i, 2));
+                        if(!sumOfSquares.contains(sum_of_square))
                         sumOfSquares.add(sum_of_square);
                         if(!negative.containsKey(sum_of_square))
                         negative.put(sum_of_square,subtract(pk, encryption(pk, new BigInteger(String.valueOf(0))), encryption(pk, new BigInteger(String.valueOf(sum_of_square)))));
