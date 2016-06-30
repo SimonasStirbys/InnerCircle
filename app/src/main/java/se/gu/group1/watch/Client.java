@@ -56,6 +56,7 @@ class Client{
     public int sendDataToServer(String msg) {
 
         Log.d("Msg to Server", msg);
+        Log.d("Msg to Server length", msg.length());
        out.println(msg);
 
         return 1;
