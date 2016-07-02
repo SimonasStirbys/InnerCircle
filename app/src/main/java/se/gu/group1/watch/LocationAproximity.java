@@ -32,7 +32,7 @@ public class LocationAproximity {
         }
         Collections.shuffle(result);
         final long end = System.nanoTime();
-        System.out.println("LessThan Took: " + ((end - start) / 1000000000) + "s");
+        Log.d("LessThan Took: " , ((end - start) / 1000000000) + "s");
         return result;
     }
 
@@ -47,7 +47,7 @@ public class LocationAproximity {
             }
         }
         final long end = System.nanoTime();
-        System.out.println("InProx Took: " + ((end - start) / 1000000000) + "s");
+        Log.d("InProx Took: " , ((end - start) / 1000000000) + "s");
         return false;
     }
 
