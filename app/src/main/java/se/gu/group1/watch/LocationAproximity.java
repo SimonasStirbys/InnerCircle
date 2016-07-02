@@ -16,6 +16,7 @@ public class LocationAproximity {
     ElgamalCrypto elgamal = new ElgamalCrypto();
 
     public ArrayList<CipherText> LessThan(CipherText d, int radius, PublicKey Pk) {
+        final long start = System.nanoTime();
         List<Integer> range = elgamal.getSumOfSquares(radius);
         ArrayList<CipherText> result = new ArrayList<>();
         Random rand = new Random();
@@ -30,10 +31,13 @@ public class LocationAproximity {
             result.add(randomized);
         }
         Collections.shuffle(result);
+        final long end = System.nanoTime();
+        System.out.println("LessThan Took: " + ((end - start) / 1000000000) + "s);
         return result;
     }
 
     public boolean InProx(ArrayList<CipherText> result, PublicKey Pk, SecretKey secretK) {
+        final long start = System.nanoTime();
         for (int i = 0; i < result.size(); i++) {
             Log.d("locationaproximity", String.valueOf((float) i / result.size()));
             CipherText cipher = result.get(i);
@@ -42,6 +46,8 @@ public class LocationAproximity {
                 return true;
             }
         }
+        final long end = System.nanoTime();
+        System.out.println("InProx Took: " + ((end - start) / 1000000000) + "s);
         return false;
     }
 
